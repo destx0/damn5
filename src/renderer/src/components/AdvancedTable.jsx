@@ -1,19 +1,56 @@
 import React, { useState, useCallback } from 'react'
 import { AgGridReact } from 'ag-grid-react'
-import { MoreVertical } from 'lucide-react'
+import { MoreVertical, UserCircle, Printer, Trash2 } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 
 const ActionCellRenderer = (params) => {
-  const handleClick = () => {
-    console.log('Action clicked for row:', params.data)
-    // Add your action logic here
+  const handleView = () => {
+    console.log('View clicked for row:', params.data)
+    // Add your view logic here
+  }
+
+  const handlePrint = () => {
+    console.log('Print clicked for row:', params.data)
+    // Add your print logic here
+  }
+
+  const handleDelete = () => {
+    console.log('Delete clicked for row:', params.data)
+    // Add your delete logic here
   }
 
   return (
-    <button onClick={handleClick} className="p-1 hover:bg-gray-200 rounded">
-      <MoreVertical size={16} />
-    </button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <MoreVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={handleView}>
+          <UserCircle className="mr-2 h-4 w-4 text-blue-500" />
+          <span>View</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handlePrint}>
+          <Printer className="mr-2 h-4 w-4 text-green-500" />
+          <span>Print</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleDelete}>
+          <Trash2 className="mr-2 h-4 w-4 text-red-500" />
+          <span>Delete</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
@@ -200,7 +237,8 @@ const AdvancedTable = ({ rowData }) => {
 
   const defaultColDef = {
     sortable: true,
-    resizable: true
+    resizable: true,
+    width: 110
   }
 
   const onCellValueChanged = useCallback((event) => {
