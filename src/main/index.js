@@ -52,23 +52,37 @@ app.whenReady().then(() => {
 
   // IPC handler for opening file dialog
   ipcMain.handle('open-file-dialog', async () => {
-    const result = await dialog.showOpenDialog({
-      properties: ['openFile'],
-      filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
-    })
-    return result
+    console.log('Open file dialog called')
+    try {
+      const result = await dialog.showOpenDialog({
+        properties: ['openFile'],
+        filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
+      })
+      console.log('Open file dialog result:', result)
+      return result
+    } catch (error) {
+      console.error('Error in open file dialog:', error)
+      return { canceled: true, error: error.message }
+    }
   })
 
   // IPC handler for saving file dialog
   ipcMain.handle('save-file-dialog', async (event, csvContent) => {
-    const result = await dialog.showSaveDialog({
-      filters: [{ name: 'CSV', extensions: ['csv'] }]
-    })
-    if (result.filePath) {
-      fs.writeFileSync(result.filePath, csvContent)
-      return { success: true, filePath: result.filePath }
+    console.log('Save file dialog called')
+    try {
+      const result = await dialog.showSaveDialog({
+        filters: [{ name: 'CSV', extensions: ['csv'] }]
+      })
+      console.log('Save file dialog result:', result)
+      if (result.filePath) {
+        fs.writeFileSync(result.filePath, csvContent)
+        return { success: true, filePath: result.filePath }
+      }
+      return { success: false }
+    } catch (error) {
+      console.error('Error in save file dialog:', error)
+      return { success: false, error: error.message }
     }
-    return { success: false }
   })
 
   createWindow()
@@ -88,6 +102,3 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
