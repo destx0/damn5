@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import AddStudentForm from './components/AddStudentForm'
 import Table from './components/Table'
 import generateCertificate from './components/generateCertificate'
@@ -11,6 +11,7 @@ const App = () => {
   ])
 
   const [gridApi, setGridApi] = useState(null)
+  const tableRef = useRef(null)
 
   const [columnDefs] = useState([
     { field: 'id', editable: false },
@@ -26,11 +27,11 @@ const App = () => {
 
   useEffect(() => {
     console.log('rowData updated:', rowData)
-    if (gridApi) {
-      console.log('Updating grid data from App')
-      gridApi.setGridOption('rowData', rowData)
+    if (tableRef.current) {
+      console.log('Calling refreshGrid from App')
+      tableRef.current.refreshGrid()
     }
-  }, [rowData, gridApi])
+  }, [rowData])
 
   const onAddStudent = (newStudent) => {
     setRowData((prevData) => {
@@ -61,6 +62,7 @@ const App = () => {
       <AddStudentForm onAddStudent={onAddStudent} />
       <ImportExport onDataImported={handleDataImported} gridApi={gridApi} />
       <Table
+        ref={tableRef}
         rowData={rowData}
         columnDefs={columnDefs}
         onCellValueChanged={onCellValueChanged}

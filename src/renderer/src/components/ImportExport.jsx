@@ -9,10 +9,6 @@ const ImportExport = ({ onDataImported, gridApi }) => {
         console.log('Imported data:', result.data)
         if (Array.isArray(result.data) && result.data.length > 0) {
           onDataImported(result.data)
-          if (gridApi) {
-            console.log('Updating grid data from ImportExport')
-            gridApi.setGridOption('rowData', result.data)
-          }
           alert('File imported successfully!')
         } else {
           console.error('Imported data is empty or not an array')
