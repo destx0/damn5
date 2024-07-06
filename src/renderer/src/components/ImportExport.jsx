@@ -1,17 +1,26 @@
 import React from 'react'
-import * as XLSX from 'xlsx'
 
 const ImportExport = ({ onDataImported, gridApi }) => {
   const handleImport = async () => {
     try {
       const result = await window.api.openFileDialog()
-      if (result.filePaths && result.filePaths.length > 0) {
-        const filePath = result.filePaths[0]
-        const workbook = XLSX.readFile(filePath)
-        const worksheetName = workbook.SheetNames[0]
-        const worksheet = workbook.Sheets[worksheetName]
-        const data = XLSX.utils.sheet_to_json(worksheet)
-        onDataImported(data)
+      console.log('Import result:', result)
+      if (result.success) {
+        console.log('Imported data:', result.data)
+        if (Array.isArray(result.data) && result.data.length > 0) {
+          onDataImported(result.data)
+          if (gridApi) {
+            console.log('Updating grid data from ImportExport')
+            gridApi.setGridOption('rowData', result.data)
+          }
+          alert('File imported successfully!')
+        } else {
+          console.error('Imported data is empty or not an array')
+          alert('Imported data is empty or invalid. Please check the file content.')
+        }
+      } else {
+        console.error('Failed to import file:', result.reason || result.error)
+        alert('Failed to import file. Please try again.')
       }
     } catch (error) {
       console.error('Error importing file:', error)

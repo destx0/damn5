@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import AddStudentForm from './components/AddStudentForm'
 import Table from './components/Table'
 import generateCertificate from './components/generateCertificate'
@@ -24,8 +24,20 @@ const App = () => {
     }
   ])
 
+  useEffect(() => {
+    console.log('rowData updated:', rowData)
+    if (gridApi) {
+      console.log('Updating grid data from App')
+      gridApi.setGridOption('rowData', rowData)
+    }
+  }, [rowData, gridApi])
+
   const onAddStudent = (newStudent) => {
-    setRowData([...rowData, newStudent])
+    setRowData((prevData) => {
+      const newData = [...prevData, newStudent]
+      console.log('New rowData after adding student:', newData)
+      return newData
+    })
   }
 
   const onCellValueChanged = (event) => {
@@ -34,10 +46,12 @@ const App = () => {
   }
 
   const onGridReady = useCallback((api) => {
+    console.log('Grid API set in App component')
     setGridApi(api)
   }, [])
 
   const handleDataImported = (data) => {
+    console.log('Data imported in App component:', data)
     setRowData(data)
   }
 

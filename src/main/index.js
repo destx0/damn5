@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
+import * as XLSX from 'xlsx'
 
 function createWindow() {
   // Create the browser window.
@@ -50,7 +51,7 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC handler for opening file dialog
+  // IPC handler for opening file dialog and reading Excel file
   ipcMain.handle('open-file-dialog', async () => {
     console.log('Open file dialog called')
     try {
@@ -59,10 +60,22 @@ app.whenReady().then(() => {
         filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
       })
       console.log('Open file dialog result:', result)
-      return result
+      if (!result.canceled && result.filePaths.length > 0) {
+        const filePath = result.filePaths[0]
+        console.log('Reading file:', filePath)
+        const workbook = XLSX.readFile(filePath)
+        console.log('Workbook read successfully')
+        const worksheetName = workbook.SheetNames[0]
+        console.log('First worksheet name:', worksheetName)
+        const worksheet = workbook.Sheets[worksheetName]
+        const data = XLSX.utils.sheet_to_json(worksheet)
+        console.log('Parsed data:', data)
+        return { success: true, data }
+      }
+      return { success: false, reason: 'No file selected' }
     } catch (error) {
       console.error('Error in open file dialog:', error)
-      return { canceled: true, error: error.message }
+      return { success: false, error: error.message }
     }
   })
 
@@ -78,7 +91,7 @@ app.whenReady().then(() => {
         fs.writeFileSync(result.filePath, csvContent)
         return { success: true, filePath: result.filePath }
       }
-      return { success: false }
+      return { success: false, reason: 'No file path selected' }
     } catch (error) {
       console.error('Error in save file dialog:', error)
       return { success: false, error: error.message }
