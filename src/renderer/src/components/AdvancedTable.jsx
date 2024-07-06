@@ -189,12 +189,13 @@ const AdvancedTable = ({ rowData }) => {
   }, [])
 
   return (
-    <div className="ag-theme-alpine" style={{ height: 500, width: '100%' }}>
+    <div className="ag-theme-alpine w-full h-full">
       <AgGridReact
         rowData={rowData}
         columnDefs={columnDefs}
         defaultColDef={defaultColDef}
         onCellValueChanged={onCellValueChanged}
+        domLayout="normal"
         rowSelection={'multiple'}
         pagination={true}
         paginationPageSize={10}

@@ -37,7 +37,7 @@ const Home = () => {
   }
 
   return (
-    <div className="p-4">
+    <div className="h-full">
       <AdvancedTable rowData={rowData} onCellValueChanged={onCellValueChanged} />
     </div>
   )
