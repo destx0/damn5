@@ -1,52 +1,42 @@
-import React, { useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react'
-import { AgGridReact } from 'ag-grid-react'
+import React, { useEffect, useRef } from 'react'
+import { createGrid } from 'ag-grid-community'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 
-const Table = forwardRef(({ rowData, columnDefs, onCellValueChanged, onGridReady }, ref) => {
+const Table = ({ rowData, columnDefs, onCellValueChanged, onGridReady }) => {
   const gridRef = useRef(null)
-
-  useImperativeHandle(ref, () => ({
-    refreshGrid: () => {
-      if (gridRef.current && gridRef.current.api) {
-        console.log('Forcing grid refresh')
-        gridRef.current.api.setGridOption('rowData', rowData)
-        gridRef.current.api.refreshCells({ force: true })
-      }
-    }
-  }))
-
-  const onGridReadyInternal = useCallback(
-    (params) => {
-      console.log('Grid ready event fired')
-      if (onGridReady) onGridReady(params.api)
-    },
-    [onGridReady]
-  )
+  const gridApiRef = useRef(null)
 
   useEffect(() => {
-    console.log('Table component rendered')
-    console.log('rowData in Table:', rowData)
-    console.log('columnDefs:', columnDefs)
+    if (gridRef.current && !gridApiRef.current) {
+      const gridOptions = {
+        columnDefs: columnDefs,
+        rowData: rowData,
+        defaultColDef: {
+          flex: 1,
+          minWidth: 100,
+          editable: true
+        },
+        onCellValueChanged: onCellValueChanged
+      }
 
-    if (gridRef.current && gridRef.current.api) {
-      console.log('Updating grid data in Table useEffect')
-      gridRef.current.api.setGridOption('rowData', rowData)
-      gridRef.current.api.refreshCells({ force: true })
+      gridApiRef.current = createGrid(gridRef.current, gridOptions)
+
+      if (onGridReady) {
+        onGridReady(gridApiRef.current)
+      }
     }
-  }, [rowData, columnDefs])
+  }, [])
 
-  return (
-    <div className="ag-theme-alpine" style={{ height: 400, width: '100%' }}>
-      <AgGridReact
-        ref={gridRef}
-        rowData={rowData}
-        columnDefs={columnDefs}
-        onCellValueChanged={onCellValueChanged}
-        onGridReady={onGridReadyInternal}
-      />
-    </div>
-  )
-})
+  useEffect(() => {
+    console.log('rowData in Table component:', rowData)
+    if (gridApiRef.current) {
+      console.log('Updating grid data in Table component')
+      gridApiRef.current.setGridOption('rowData', rowData)
+    }
+  }, [rowData])
+
+  return <div ref={gridRef} className="ag-theme-alpine" style={{ height: 400, width: '100%' }} />
+}
 
 export default Table

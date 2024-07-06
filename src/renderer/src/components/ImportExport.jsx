@@ -6,9 +6,19 @@ const ImportExport = ({ onDataImported, gridApi }) => {
       const result = await window.api.openFileDialog()
       console.log('Import result:', result)
       if (result.success) {
-        console.log('Imported data:', result.data)
+        console.log('Raw imported data:', result.data)
         if (Array.isArray(result.data) && result.data.length > 0) {
-          onDataImported(result.data)
+          const formattedData = result.data.map((item) => ({
+            id: item.Id || item.id,
+            name: item.Name || item.name,
+            grade: item.Grade || item.grade
+          }))
+          console.log('Formatted data:', formattedData)
+          onDataImported(formattedData)
+          if (gridApi) {
+            console.log('Updating grid with imported data')
+            gridApi.setGridOption('rowData', formattedData)
+          }
           alert('File imported successfully!')
         } else {
           console.error('Imported data is empty or not an array')

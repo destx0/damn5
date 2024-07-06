@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react'
+import React, { useState, useCallback } from 'react'
 import AddStudentForm from './components/AddStudentForm'
 import Table from './components/Table'
 import generateCertificate from './components/generateCertificate'
@@ -11,34 +11,24 @@ const App = () => {
   ])
 
   const [gridApi, setGridApi] = useState(null)
-  const tableRef = useRef(null)
 
-  const [columnDefs] = useState([
+  const columnDefs = [
     { field: 'id', editable: false },
     { field: 'name', editable: true },
     { field: 'grade', editable: true },
     {
       headerName: 'Actions',
-      cellRenderer: (params) => (
-        <button onClick={() => generateCertificate(params.data)}>Generate Certificate</button>
-      )
+      cellRenderer: (params) => {
+        const button = document.createElement('button')
+        button.innerText = 'Generate Certificate'
+        button.addEventListener('click', () => generateCertificate(params.data))
+        return button
+      }
     }
-  ])
-
-  useEffect(() => {
-    console.log('rowData updated:', rowData)
-    if (tableRef.current) {
-      console.log('Calling refreshGrid from App')
-      tableRef.current.refreshGrid()
-    }
-  }, [rowData])
+  ]
 
   const onAddStudent = (newStudent) => {
-    setRowData((prevData) => {
-      const newData = [...prevData, newStudent]
-      console.log('New rowData after adding student:', newData)
-      return newData
-    })
+    setRowData((prevData) => [...prevData, newStudent])
   }
 
   const onCellValueChanged = (event) => {
@@ -52,8 +42,12 @@ const App = () => {
   }, [])
 
   const handleDataImported = (data) => {
-    console.log('Data imported in App component:', data)
+    console.log('Data received in App component:', data)
     setRowData(data)
+    if (gridApi) {
+      console.log('Updating grid with new data:', data)
+      gridApi.setGridOption('rowData', data)
+    }
   }
 
   return (
@@ -62,7 +56,6 @@ const App = () => {
       <AddStudentForm onAddStudent={onAddStudent} />
       <ImportExport onDataImported={handleDataImported} gridApi={gridApi} />
       <Table
-        ref={tableRef}
         rowData={rowData}
         columnDefs={columnDefs}
         onCellValueChanged={onCellValueChanged}
