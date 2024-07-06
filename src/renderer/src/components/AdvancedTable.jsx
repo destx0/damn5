@@ -29,10 +29,9 @@ const AdvancedTable = ({ rowData }) => {
     {
       field: 'dob',
       headerName: 'Date of Birth',
-      filter: 'agDateColumnFilter',
+      filter: 'agTextColumnFilter',
       floatingFilter: true,
-      editable: true,
-      cellEditor: 'agDateCellEditor'
+      editable: true
     },
     {
       field: 'admissionStandard',
@@ -135,10 +134,9 @@ const AdvancedTable = ({ rowData }) => {
     {
       field: 'dateOfAdmission',
       headerName: 'Date of Admission',
-      filter: 'agDateColumnFilter',
+      filter: 'agTextColumnFilter',
       floatingFilter: true,
-      editable: true,
-      cellEditor: 'agDateCellEditor'
+      editable: true
     },
     {
       field: 'progress',
@@ -157,10 +155,9 @@ const AdvancedTable = ({ rowData }) => {
     {
       field: 'dateOfLeaving',
       headerName: 'Date of Leaving',
-      filter: 'agDateColumnFilter',
+      filter: 'agTextColumnFilter',
       floatingFilter: true,
-      editable: true,
-      cellEditor: 'agDateCellEditor'
+      editable: true
     },
     {
       field: 'reasonOfLeaving',

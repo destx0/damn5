@@ -15,32 +15,14 @@ const columnDefs = [
   { field: 'taluka', headerName: 'Taluka', editable: true },
   { field: 'district', headerName: 'District', editable: true },
   { field: 'state', headerName: 'State', editable: true },
-  {
-    field: 'dob',
-    headerName: 'Date of Birth',
-    editable: true,
-    cellEditor: 'datePicker',
-    cellEditorPopup: true
-  },
+  { field: 'dob', headerName: 'Date of Birth', editable: true },
   { field: 'lastAttendedSchool', headerName: 'Last Attended School', editable: true },
   { field: 'lastSchoolStandard', headerName: 'Last School Standard', editable: true },
-  {
-    field: 'dateOfAdmission',
-    headerName: 'Date of Admission',
-    editable: true,
-    cellEditor: 'datePicker',
-    cellEditorPopup: true
-  },
+  { field: 'dateOfAdmission', headerName: 'Date of Admission', editable: true },
   { field: 'admissionStandard', headerName: 'Admission Standard', editable: true },
   { field: 'progress', headerName: 'Progress', editable: true },
   { field: 'conduct', headerName: 'Conduct', editable: true },
-  {
-    field: 'dateOfLeaving',
-    headerName: 'Date of Leaving',
-    editable: true,
-    cellEditor: 'datePicker',
-    cellEditorPopup: true
-  },
+  { field: 'dateOfLeaving', headerName: 'Date of Leaving', editable: true },
   { field: 'currentStandard', headerName: 'Current Standard', editable: true },
   { field: 'reasonOfLeaving', headerName: 'Reason of Leaving', editable: true },
   { field: 'remarks', headerName: 'Remarks', editable: true },
