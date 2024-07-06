@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import Table from '../components/Table'
-import ImportExport from '../components/ImportExport'
 import columnDefs from '../utils/columnDefs'
 
 const Home = () => {
@@ -38,19 +37,13 @@ const Home = () => {
     }
   }
 
-  const onGridReady = useCallback((api) => {
-    setGridApi(api)
+  const onGridReady = useCallback((params) => {
+    setGridApi(params.api)
   }, [])
-
-  const handleDataImported = (importedData) => {
-    console.log('Imported data in Home component:', importedData)
-    setRowData(importedData)
-  }
 
   return (
     <div>
       <h1>Student Management System</h1>
-      <ImportExport onDataImported={handleDataImported} gridApi={gridApi} />
       <Table
         rowData={rowData}
         columnDefs={columnDefs}
