@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import Table from '../components/Table'
 import columnDefs from '../utils/columnDefs'
+import { Button } from '@renderer/components/ui/button'
 
 const Home = () => {
   const [rowData, setRowData] = useState([])
@@ -44,6 +45,8 @@ const Home = () => {
   return (
     <div>
       <h1>Student Management System</h1>
+      <Button variant="outline">Button</Button>
+
       <Table
         rowData={rowData}
         columnDefs={columnDefs}
