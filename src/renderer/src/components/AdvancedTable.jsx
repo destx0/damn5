@@ -6,24 +6,8 @@ import 'ag-grid-community/styles/ag-theme-alpine.css'
 const AdvancedTable = ({ rowData }) => {
   const [columnDefs] = useState([
     {
-      field: 'id',
-      headerName: 'ID',
-      filter: 'agNumberColumnFilter',
-      floatingFilter: true,
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
-      editable: false
-    },
-    {
       field: 'studentId',
       headerName: 'Student ID',
-      filter: 'agTextColumnFilter',
-      floatingFilter: true,
-      editable: true
-    },
-    {
-      field: 'aadharNo',
-      headerName: 'Aadhar No',
       filter: 'agTextColumnFilter',
       floatingFilter: true,
       editable: true
@@ -38,6 +22,35 @@ const AdvancedTable = ({ rowData }) => {
     {
       field: 'surname',
       headerName: 'Surname',
+      filter: 'agTextColumnFilter',
+      floatingFilter: true,
+      editable: true
+    },
+    {
+      field: 'dob',
+      headerName: 'Date of Birth',
+      filter: 'agDateColumnFilter',
+      floatingFilter: true,
+      editable: true,
+      cellEditor: 'agDateCellEditor'
+    },
+    {
+      field: 'admissionStandard',
+      headerName: 'Admission Standard',
+      filter: 'agTextColumnFilter',
+      floatingFilter: true,
+      editable: true
+    },
+    {
+      field: 'currentStandard',
+      headerName: 'Current Standard',
+      filter: 'agTextColumnFilter',
+      floatingFilter: true,
+      editable: true
+    },
+    {
+      field: 'aadharNo',
+      headerName: 'Aadhar No',
       filter: 'agTextColumnFilter',
       floatingFilter: true,
       editable: true
@@ -106,14 +119,6 @@ const AdvancedTable = ({ rowData }) => {
       editable: true
     },
     {
-      field: 'dob',
-      headerName: 'Date of Birth',
-      filter: 'agDateColumnFilter',
-      floatingFilter: true,
-      editable: true,
-      cellEditor: 'agDateCellEditor'
-    },
-    {
       field: 'lastAttendedSchool',
       headerName: 'Last Attended School',
       filter: 'agTextColumnFilter',
@@ -136,13 +141,6 @@ const AdvancedTable = ({ rowData }) => {
       cellEditor: 'agDateCellEditor'
     },
     {
-      field: 'admissionStandard',
-      headerName: 'Admission Standard',
-      filter: 'agTextColumnFilter',
-      floatingFilter: true,
-      editable: true
-    },
-    {
       field: 'progress',
       headerName: 'Progress',
       filter: 'agTextColumnFilter',
@@ -163,13 +161,6 @@ const AdvancedTable = ({ rowData }) => {
       floatingFilter: true,
       editable: true,
       cellEditor: 'agDateCellEditor'
-    },
-    {
-      field: 'currentStandard',
-      headerName: 'Current Standard',
-      filter: 'agTextColumnFilter',
-      floatingFilter: true,
-      editable: true
     },
     {
       field: 'reasonOfLeaving',
