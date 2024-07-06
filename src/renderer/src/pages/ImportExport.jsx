@@ -7,10 +7,10 @@ const ImportExport = () => {
       if (result.success) {
         alert('File imported and data saved successfully!')
       } else {
-        alert('Failed to import and save file. Please try again.')
+        alert(`Failed to import and save file: ${result.reason || result.error}`)
       }
     } catch (error) {
-      alert('Failed to import and save file. Please try again.')
+      alert(`Failed to import and save file: ${error.message}`)
     }
   }
 
@@ -18,26 +18,84 @@ const ImportExport = () => {
     try {
       const result = await window.api.getStudents()
       if (result.success) {
-        const csvContent = result.data.map((s) => `${s.id},${s.name},${s.grade}`).join('\n')
-        const exportResult = await window.api.saveFileDialog(`id,name,grade\n${csvContent}`)
+        const headers = [
+          'id',
+          'studentId',
+          'aadharNo',
+          'name',
+          'surname',
+          'fathersName',
+          'mothersName',
+          'religion',
+          'caste',
+          'subCaste',
+          'placeOfBirth',
+          'taluka',
+          'district',
+          'state',
+          'dob',
+          'lastAttendedSchool',
+          'lastSchoolStandard',
+          'dateOfAdmission',
+          'admissionStandard',
+          'progress',
+          'conduct',
+          'dateOfLeaving',
+          'currentStandard',
+          'reasonOfLeaving',
+          'remarks'
+        ]
+
+        const csvContent = result.data
+          .map((student) =>
+            headers
+              .map((header) => {
+                let value = student[header]
+                if (
+                  typeof value === 'string' &&
+                  (header === 'dob' || header === 'dateOfAdmission' || header === 'dateOfLeaving')
+                ) {
+                  // Ensure date is in YYYY-MM-DD format
+                  const date = new Date(value)
+                  value = date.toISOString().split('T')[0]
+                }
+                return typeof value === 'string' ? `"${value}"` : value
+              })
+              .join(',')
+          )
+          .join('\n')
+
+        const exportResult = await window.api.saveFileDialog(`${headers.join(',')}\n${csvContent}`)
         if (exportResult.success) {
           alert('File exported successfully!')
         } else {
-          alert('File export was cancelled or failed.')
+          alert(`File export was cancelled or failed: ${exportResult.reason || exportResult.error}`)
         }
       } else {
-        alert('Failed to export file. Please try again.')
+        alert(`Failed to export file: ${result.error}`)
       }
     } catch (error) {
-      alert('Failed to export file. Please try again.')
+      alert(`Failed to export file: ${error.message}`)
     }
   }
 
   return (
-    <div>
-      <h1>Import/Export</h1>
-      <button onClick={handleImport}>Import from Excel</button>
-      <button onClick={handleExport}>Export to CSV</button>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Import/Export</h1>
+      <div className="space-x-4">
+        <button
+          onClick={handleImport}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Import from Excel
+        </button>
+        <button
+          onClick={handleExport}
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Export to CSV
+        </button>
+      </div>
     </div>
   )
 }
