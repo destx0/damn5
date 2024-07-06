@@ -38,11 +38,6 @@ const Home = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Student Management System</h1>
-      <Button variant="outline" className="mb-4">
-        Button
-      </Button>
-
       <AdvancedTable rowData={rowData} onCellValueChanged={onCellValueChanged} />
     </div>
   )
