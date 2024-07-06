@@ -1,11 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import Table from '../components/Table'
-import columnDefs from '../utils/columnDefs'
+import AdvancedTable from '../components/AdvancedTable' // Import the new AdvancedTable component
 import { Button } from '@renderer/components/ui/button'
 
 const Home = () => {
   const [rowData, setRowData] = useState([])
-  const [gridApi, setGridApi] = useState(null)
 
   const fetchStudents = async () => {
     try {
@@ -38,21 +36,14 @@ const Home = () => {
     }
   }
 
-  const onGridReady = useCallback((params) => {
-    setGridApi(params.api)
-  }, [])
-
   return (
-    <div>
-      <h1>Student Management System</h1>
-      <Button variant="outline">Button</Button>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Student Management System</h1>
+      <Button variant="outline" className="mb-4">
+        Button
+      </Button>
 
-      <Table
-        rowData={rowData}
-        columnDefs={columnDefs}
-        onCellValueChanged={onCellValueChanged}
-        onGridReady={onGridReady}
-      />
+      <AdvancedTable rowData={rowData} onCellValueChanged={onCellValueChanged} />
     </div>
   )
 }
