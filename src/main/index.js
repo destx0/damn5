@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -17,7 +17,7 @@ async function initializeDatabase() {
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS students (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id INTEGER PRIMARY KEY,
       name TEXT,
       grade TEXT
     )
@@ -25,7 +25,6 @@ async function initializeDatabase() {
 }
 
 function createWindow() {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
@@ -47,8 +46,6 @@ function createWindow() {
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -56,23 +53,15 @@ function createWindow() {
   }
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
 
   await initializeDatabase()
 
-  // IPC handler for importing Excel file and saving to database
   ipcMain.handle('import-excel-and-save', async () => {
     console.log('Import Excel and save called')
     try {
@@ -92,18 +81,17 @@ app.whenReady().then(async () => {
         const data = XLSX.utils.sheet_to_json(worksheet)
         console.log('Parsed data:', data)
 
-        // Save to database
         await db.run('BEGIN TRANSACTION')
         for (const item of data) {
-          await db.run('INSERT INTO students (name, grade) VALUES (?, ?)', [
+          await db.run('INSERT OR REPLACE INTO students (id, name, grade) VALUES (?, ?, ?)', [
+            item.Id || item.id,
             item.Name || item.name,
             item.Grade || item.grade
           ])
         }
         await db.run('COMMIT')
 
-        // Fetch all students after insertion
-        const students = await db.all('SELECT * FROM students')
+        const students = await db.all('SELECT id, name, grade FROM students')
 
         return { success: true, data: students }
       }
@@ -115,10 +103,9 @@ app.whenReady().then(async () => {
     }
   })
 
-  // Existing IPC handlers
   ipcMain.handle('get-students', async () => {
     try {
-      const students = await db.all('SELECT * FROM students')
+      const students = await db.all('SELECT id, name, grade FROM students')
       return { success: true, data: students }
     } catch (error) {
       console.error('Error fetching students:', error)
@@ -128,10 +115,10 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('add-student', async (event, student) => {
     try {
-      const result = await db.run('INSERT INTO students (name, grade) VALUES (?, ?)', [
-        student.name,
-        student.grade
-      ])
+      const result = await db.run(
+        'INSERT INTO students (id, name, grade) VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET name=excluded.name, grade=excluded.grade',
+        [student.id, student.name, student.grade]
+      )
       return { success: true, id: result.lastID }
     } catch (error) {
       console.error('Error adding student:', error)
@@ -163,18 +150,33 @@ app.whenReady().then(async () => {
     }
   })
 
+  ipcMain.handle('save-file-dialog', async () => {
+    console.log('Save file dialog called')
+    try {
+      const result = await dialog.showSaveDialog({
+        filters: [{ name: 'CSV', extensions: ['csv'] }]
+      })
+      console.log('Save file dialog result:', result)
+      if (result.filePath) {
+        const students = await db.all('SELECT id, name, grade FROM students')
+        const csvContent = students.map((s) => `${s.id},${s.name},${s.grade}`).join('\n')
+        fs.writeFileSync(result.filePath, `id,name,grade\n${csvContent}`)
+        return { success: true, filePath: result.filePath }
+      }
+      return { success: false, reason: 'No file path selected' }
+    } catch (error) {
+      console.error('Error in save file dialog:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
   createWindow()
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
