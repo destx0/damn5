@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useCallback } from 'react'
 import AddStudentForm from './components/AddStudentForm'
 import Table from './components/Table'
 import generateCertificate from './components/generateCertificate'
@@ -9,6 +9,8 @@ const App = () => {
     { id: 1, name: 'John Doe', grade: 'A' },
     { id: 2, name: 'Jane Smith', grade: 'B' }
   ])
+
+  const [gridApi, setGridApi] = useState(null)
 
   const [columnDefs] = useState([
     { field: 'id', editable: false },
@@ -22,8 +24,6 @@ const App = () => {
     }
   ])
 
-  const gridApiRef = useRef(null)
-
   const onAddStudent = (newStudent) => {
     setRowData([...rowData, newStudent])
   }
@@ -33,9 +33,9 @@ const App = () => {
     // Here you would typically update your data store
   }
 
-  const onGridReady = (params) => {
-    gridApiRef.current = params.api
-  }
+  const onGridReady = useCallback((api) => {
+    setGridApi(api)
+  }, [])
 
   const handleDataImported = (data) => {
     setRowData(data)
@@ -45,7 +45,7 @@ const App = () => {
     <div>
       <h1>Student Management System</h1>
       <AddStudentForm onAddStudent={onAddStudent} />
-      <ImportExport onDataImported={handleDataImported} gridApi={gridApiRef.current} />
+      <ImportExport onDataImported={handleDataImported} gridApi={gridApi} />
       <Table
         rowData={rowData}
         columnDefs={columnDefs}
