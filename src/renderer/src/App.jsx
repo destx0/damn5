@@ -1,16 +1,29 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import AddStudentForm from './components/AddStudentForm'
 import Table from './components/Table'
 import generateCertificate from './components/generateCertificate'
 import ImportExport from './components/ImportExport'
 
 const App = () => {
-  const [rowData, setRowData] = useState([
-    { id: 1, name: 'John Doe', grade: 'A' },
-    { id: 2, name: 'Jane Smith', grade: 'B' }
-  ])
-
+  const [rowData, setRowData] = useState([])
   const [gridApi, setGridApi] = useState(null)
+
+  const fetchStudents = async () => {
+    try {
+      const result = await window.api.getStudents()
+      if (result.success) {
+        setRowData(result.data)
+      } else {
+        console.error('Failed to fetch students:', result.error)
+      }
+    } catch (error) {
+      console.error('Error fetching students:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchStudents()
+  }, [])
 
   const columnDefs = [
     { field: 'id', editable: false },
@@ -27,27 +40,40 @@ const App = () => {
     }
   ]
 
-  const onAddStudent = (newStudent) => {
-    setRowData((prevData) => [...prevData, newStudent])
+  const onAddStudent = async (newStudent) => {
+    try {
+      const result = await window.api.addStudent(newStudent)
+      if (result.success) {
+        fetchStudents()
+      } else {
+        console.error('Failed to add student:', result.error)
+      }
+    } catch (error) {
+      console.error('Error adding student:', error)
+    }
   }
 
-  const onCellValueChanged = (event) => {
-    console.log('Cell value changed:', event)
-    // Here you would typically update your data store
+  const onCellValueChanged = async (event) => {
+    const updatedStudent = event.data
+    try {
+      const result = await window.api.updateStudent(updatedStudent)
+      if (!result.success) {
+        console.error('Failed to update student:', result.error)
+        fetchStudents() // Revert to original data if update fails
+      }
+    } catch (error) {
+      console.error('Error updating student:', error)
+      fetchStudents() // Revert to original data if update fails
+    }
   }
 
   const onGridReady = useCallback((api) => {
-    console.log('Grid API set in App component')
     setGridApi(api)
   }, [])
 
-  const handleDataImported = (data) => {
-    console.log('Data received in App component:', data)
-    setRowData(data)
-    if (gridApi) {
-      console.log('Updating grid with new data:', data)
-      gridApi.setGridOption('rowData', data)
-    }
+  const handleDataImported = (importedData) => {
+    console.log('Imported data in App component:', importedData)
+    setRowData(importedData)
   }
 
   return (
