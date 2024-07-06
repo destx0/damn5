@@ -1,35 +1,59 @@
-import Versions from './components/Versions'
-import electronLogo from './assets/electron.svg'
+import React, { useState, useRef } from 'react'
+import AddStudentForm from './components/AddStudentForm'
+import Table from './components/Table'
+import generateCertificate from './components/generateCertificate'
+import ImportExport from './components/ImportExport'
 
-function App() {
-  const ipcHandle = () => window.electron.ipcRenderer.send('ping')
+const App = () => {
+  const [rowData, setRowData] = useState([
+    { id: 1, name: 'John Doe', grade: 'A' },
+    { id: 2, name: 'Jane Smith', grade: 'B' }
+  ])
+
+  const [columnDefs] = useState([
+    { field: 'id', editable: false },
+    { field: 'name', editable: true },
+    { field: 'grade', editable: true },
+    {
+      headerName: 'Actions',
+      cellRenderer: (params) => (
+        <button onClick={() => generateCertificate(params.data)}>Generate Certificate</button>
+      )
+    }
+  ])
+
+  const gridApiRef = useRef(null)
+
+  const onAddStudent = (newStudent) => {
+    setRowData([...rowData, newStudent])
+  }
+
+  const onCellValueChanged = (event) => {
+    console.log('Cell value changed:', event)
+    // Here you would typically update your data store
+  }
+
+  const onGridReady = (params) => {
+    gridApiRef.current = params.api
+  }
+
+  const handleDataImported = (data) => {
+    setRowData(data)
+  }
 
   return (
-    <>
-      <img alt="logo" className="logo" src={electronLogo} />
-      <div className="creator">Powered by electron-vite</div>
-      <div className="text">
-        Build an Electron app with <span className="react">React</span>
-      </div>
-      <p className="tip">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-      <div className="actions">
-        <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
-        </div>
-        <div className="action">
-          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-            Send IPC
-          </a>
-        </div>
-      </div>
-      <Versions></Versions>
-    </>
+    <div>
+      <h1>Student Management System</h1>
+      <AddStudentForm onAddStudent={onAddStudent} />
+      <ImportExport onDataImported={handleDataImported} gridApi={gridApiRef.current} />
+      <Table
+        rowData={rowData}
+        columnDefs={columnDefs}
+        onCellValueChanged={onCellValueChanged}
+        onGridReady={onGridReady}
+      />
+    </div>
   )
 }
 
 export default App
-

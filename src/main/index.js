@@ -72,3 +72,34 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+ipcMain.handle('save-pdf', async (event, pdfData) => {
+  const { filePath } = await dialog.showSaveDialog({
+    buttonLabel: 'Save Certificate',
+    defaultPath: `certificate-${Date.now()}.pdf`
+  })
+
+  if (filePath) {
+    require('fs').writeFileSync(filePath, Buffer.from(pdfData))
+    return { success: true, filePath }
+  }
+
+  return { success: false }
+})
+ipcMain.handle('open-file-dialog', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
+  })
+  return result
+})
+
+ipcMain.handle('save-file-dialog', async (event, csvData) => {
+  const result = await dialog.showSaveDialog({
+    filters: [{ name: 'CSV', extensions: ['csv'] }]
+  })
+  if (result.filePath) {
+    fs.writeFileSync(result.filePath, csvData)
+    return { success: true, filePath: result.filePath }
+  }
+  return { success: false }
+})
