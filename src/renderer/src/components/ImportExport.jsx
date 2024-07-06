@@ -1,64 +1,44 @@
 import React from 'react'
 
-const ImportExport = ({ onDataImported, gridApi }) => {
+const ImportExport = ({ onDataImported }) => {
   const handleImport = async () => {
     try {
-      const result = await window.api.openFileDialog()
-      console.log('Import result:', result)
+      const result = await window.api.importExcelAndSave()
+      console.log('Import and save result:', result)
       if (result.success) {
-        console.log('Raw imported data:', result.data)
-        if (Array.isArray(result.data) && result.data.length > 0) {
-          const formattedData = result.data.map((item) => ({
-            id: item.Id || item.id,
-            name: item.Name || item.name,
-            grade: item.Grade || item.grade
-          }))
-          console.log('Formatted data:', formattedData)
-          onDataImported(formattedData)
-          if (gridApi) {
-            console.log('Updating grid with imported data')
-            gridApi.setGridOption('rowData', formattedData)
-          }
-          alert('File imported successfully!')
-        } else {
-          console.error('Imported data is empty or not an array')
-          alert('Imported data is empty or invalid. Please check the file content.')
-        }
+        console.log('Imported and saved data:', result.data)
+        onDataImported(result.data)
+        alert('File imported and data saved successfully!')
       } else {
-        console.error('Failed to import file:', result.reason || result.error)
-        alert('Failed to import file. Please try again.')
+        console.error('Failed to import and save file:', result.reason || result.error)
+        alert('Failed to import and save file. Please try again.')
       }
     } catch (error) {
-      console.error('Error importing file:', error)
-      alert('Failed to import file. Please try again.')
+      console.error('Error importing and saving file:', error)
+      alert('Failed to import and save file. Please try again.')
     }
   }
 
   const handleExport = async () => {
-    if (gridApi) {
-      const params = {
-        skipHeader: false,
-        skipFooters: true,
-        skipGroups: true,
-        fileName: 'export.csv'
-      }
-      const csvContent = gridApi.getDataAsCsv(params)
-      try {
-        const result = await window.api.saveFileDialog(csvContent)
-        if (result.success) {
-          console.log('File saved successfully at:', result.filePath)
+    try {
+      const result = await window.api.getStudents()
+      if (result.success) {
+        const csvContent = result.data.map((s) => `${s.id},${s.name},${s.grade}`).join('\n')
+        const exportResult = await window.api.saveFileDialog(`id,name,grade\n${csvContent}`)
+        if (exportResult.success) {
+          console.log('File saved successfully at:', exportResult.filePath)
           alert('File exported successfully!')
         } else {
           console.log('File save was cancelled or failed')
           alert('File export was cancelled or failed.')
         }
-      } catch (error) {
-        console.error('Error exporting file:', error)
+      } else {
+        console.error('Failed to fetch students for export:', result.error)
         alert('Failed to export file. Please try again.')
       }
-    } else {
-      console.error('Grid API is not available')
-      alert('Unable to export. Grid API is not available.')
+    } catch (error) {
+      console.error('Error exporting file:', error)
+      alert('Failed to export file. Please try again.')
     }
   }
 

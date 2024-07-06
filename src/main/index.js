@@ -1,12 +1,11 @@
-import { app, ipcMain } from 'electron'
-import sqlite3 from 'sqlite3'
-import { open } from 'sqlite'
-import { BrowserWindow, dialog, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
 import * as XLSX from 'xlsx'
+import sqlite3 from 'sqlite3'
+import { open } from 'sqlite'
 
 let db
 
@@ -26,6 +25,7 @@ async function initializeDatabase() {
 }
 
 function createWindow() {
+  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
@@ -47,6 +47,8 @@ function createWindow() {
     return { action: 'deny' }
   })
 
+  // HMR for renderer base on electron-vite cli.
+  // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -54,9 +56,10 @@ function createWindow() {
   }
 }
 
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  await initializeDatabase()
-
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -67,7 +70,52 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC handlers for database operations
+  await initializeDatabase()
+
+  // IPC handler for importing Excel file and saving to database
+  ipcMain.handle('import-excel-and-save', async () => {
+    console.log('Import Excel and save called')
+    try {
+      const result = await dialog.showOpenDialog({
+        properties: ['openFile'],
+        filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
+      })
+      console.log('Open file dialog result:', result)
+      if (!result.canceled && result.filePaths.length > 0) {
+        const filePath = result.filePaths[0]
+        console.log('Reading file:', filePath)
+        const workbook = XLSX.readFile(filePath)
+        console.log('Workbook read successfully')
+        const worksheetName = workbook.SheetNames[0]
+        console.log('First worksheet name:', worksheetName)
+        const worksheet = workbook.Sheets[worksheetName]
+        const data = XLSX.utils.sheet_to_json(worksheet)
+        console.log('Parsed data:', data)
+
+        // Save to database
+        await db.run('BEGIN TRANSACTION')
+        for (const item of data) {
+          await db.run('INSERT INTO students (name, grade) VALUES (?, ?)', [
+            item.Name || item.name,
+            item.Grade || item.grade
+          ])
+        }
+        await db.run('COMMIT')
+
+        // Fetch all students after insertion
+        const students = await db.all('SELECT * FROM students')
+
+        return { success: true, data: students }
+      }
+      return { success: false, reason: 'No file selected' }
+    } catch (error) {
+      console.error('Error in import Excel and save:', error)
+      await db.run('ROLLBACK')
+      return { success: false, error: error.message }
+    }
+  })
+
+  // Existing IPC handlers
   ipcMain.handle('get-students', async () => {
     try {
       const students = await db.all('SELECT * FROM students')
@@ -115,71 +163,18 @@ app.whenReady().then(async () => {
     }
   })
 
-  // IPC handler for opening file dialog and reading Excel file
-  ipcMain.handle('open-file-dialog', async () => {
-    console.log('Open file dialog called')
-    try {
-      const result = await dialog.showOpenDialog({
-        properties: ['openFile'],
-        filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
-      })
-      console.log('Open file dialog result:', result)
-      if (!result.canceled && result.filePaths.length > 0) {
-        const filePath = result.filePaths[0]
-        console.log('Reading file:', filePath)
-        const workbook = XLSX.readFile(filePath)
-        console.log('Workbook read successfully')
-        const worksheetName = workbook.SheetNames[0]
-        console.log('First worksheet name:', worksheetName)
-        const worksheet = workbook.Sheets[worksheetName]
-        const data = XLSX.utils.sheet_to_json(worksheet)
-        console.log('Parsed data:', data)
-
-        // Insert imported data into the database
-        for (const student of data) {
-          await db.run('INSERT INTO students (name, grade) VALUES (?, ?)', [
-            student.name,
-            student.grade
-          ])
-        }
-
-        return { success: true, data }
-      }
-      return { success: false, reason: 'No file selected' }
-    } catch (error) {
-      console.error('Error in open file dialog:', error)
-      return { success: false, error: error.message }
-    }
-  })
-
-  // IPC handler for saving file dialog
-  ipcMain.handle('save-file-dialog', async () => {
-    console.log('Save file dialog called')
-    try {
-      const result = await dialog.showSaveDialog({
-        filters: [{ name: 'CSV', extensions: ['csv'] }]
-      })
-      console.log('Save file dialog result:', result)
-      if (result.filePath) {
-        const students = await db.all('SELECT * FROM students')
-        const csvContent = students.map((s) => `${s.id},${s.name},${s.grade}`).join('\n')
-        fs.writeFileSync(result.filePath, `id,name,grade\n${csvContent}`)
-        return { success: true, filePath: result.filePath }
-      }
-      return { success: false, reason: 'No file path selected' }
-    } catch (error) {
-      console.error('Error in save file dialog:', error)
-      return { success: false, error: error.message }
-    }
-  })
-
   createWindow()
 
   app.on('activate', function () {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
