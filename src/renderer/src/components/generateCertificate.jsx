@@ -4,7 +4,14 @@ import { toast } from 'sonner'
 
 const generateCertificate = async (student) => {
   try {
-    // Create certificate HTML content
+    // Function to format date (assuming date is in ISO format)
+    const formatDate = (dateString) => {
+      if (!dateString) return ''
+      const date = new Date(dateString)
+      return date.toLocaleDateString('en-GB') // DD/MM/YYYY format
+    }
+
+    // Create certificate HTML content with student data
     const certificateHTML = `
       <div id="certificate" style="width: 210mm; height: 297mm; padding: 20mm; box-sizing: border-box; background-color: white; font-family: Arial, sans-serif; border: 2px solid black; font-size: 12pt;">
         <h2 style="text-align: center; margin-bottom: 10px;">Jaggannath Shikshan Prasarak Mandal's</h2>
@@ -23,28 +30,28 @@ const generateCertificate = async (student) => {
         </div>
         <h2 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">Leaving Certificate</h2>
         <div style="line-height: 1.6; padding: 10px 0;">
-          Student ID.: ______________________ U.I.D. No. (Aadhar Card No.): ______________________<br>
-          Name of the student in full (Name): ______________________ (Father's Name): ______________________<br>
-          (Surname): ______________________<br>
-          Mother's Name: ______________________<br>
-          Nationality: ______________________ Mother tongue: ______________________<br>
-          Religion: ______________________ Caste: ______________________ Sub-caste: ______________________<br>
-          Place of Birth: ______________________ Taluka: ______________________ Dist: ______________________ State: ______________________ Country: India<br>
-          Date of Birth (DD/MM/YY): ______________________<br>
-          Date of Birth (In words): ______________________<br>
-          Last school attended & standard: ______________________<br>
-          Date of admission in this school: ______________________ Standard: ______________________<br>
-          Progress: ______________________ Conduct: ______________________<br>
-          Date of leaving school: ______________________<br>
-          Standard in which studying and since when (in words and figure): ______________________<br>
-          Reason of leaving school: ______________________<br>
-          Remarks: ______________________
+          Student ID.: ${student.studentId} U.I.D. No. (Aadhar Card No.): ${student.aadharNo}<br>
+          Name of the student in full (Name): ${student.name} (Father's Name): ${student.fathersName}<br>
+          (Surname): ${student.surname}<br>
+          Mother's Name: ${student.mothersName}<br>
+          Nationality: Indian Mother tongue: ${student.motherTongue || '______________________'}<br>
+          Religion: ${student.religion} Caste: ${student.caste} Sub-caste: ${student.subCaste}<br>
+          Place of Birth: ${student.placeOfBirth} Taluka: ${student.taluka} Dist: ${student.district} State: ${student.state} Country: India<br>
+          Date of Birth (DD/MM/YY): ${formatDate(student.dateOfBirth)}<br>
+          Date of Birth (In words): ${student.dateOfBirthInWords || '______________________'}<br>
+          Last school attended & standard: ${student.lastAttendedSchool} - ${student.lastSchoolStandard}<br>
+          Date of admission in this school: ${formatDate(student.dateOfAdmission)} Standard: ${student.admissionStandard}<br>
+          Progress: ${student.progress} Conduct: ${student.conduct}<br>
+          Date of leaving school: ${formatDate(student.dateOfLeaving)}<br>
+          Standard in which studying and since when (in words and figure): ${student.currentStandard}<br>
+          Reason of leaving school: ${student.reasonOfLeaving}<br>
+          Remarks: ${student.remarks}
         </div>
         <p style="margin-top: 20px;">Certified that the above information is in accordance with the School Register.</p>
         <div style="display: flex; justify-content: space-between; margin-top: 40px;">
-          <div>Date: ____________</div>
-          <div>Month: ____________</div>
-          <div>Year: ____________</div>
+          <div>Date: ${new Date().getDate()}</div>
+          <div>Month: ${new Date().toLocaleString('default', { month: 'long' })}</div>
+          <div>Year: ${new Date().getFullYear()}</div>
         </div>
         <div style="display: flex; justify-content: space-between; margin-top: 40px;">
           <div>Class Teacher</div>
