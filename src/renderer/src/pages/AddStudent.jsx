@@ -8,6 +8,8 @@ import { UserPlus } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const iconVariants = {
+  hidden: { opacity: 0, x: 50 },
+  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.2 } },
   hover: { scale: 1.2, transition: { type: 'spring', stiffness: 300 } },
   tap: { scale: 0.8, transition: { type: 'spring', stiffness: 300 } }
 }
@@ -15,6 +17,11 @@ const iconVariants = {
 const buttonVariants = {
   hover: { scale: 1.05, transition: { type: 'spring', stiffness: 300 } },
   tap: { scale: 0.95, transition: { type: 'spring', stiffness: 300 } }
+}
+
+const easeInVariants = {
+  hidden: { opacity: 0, x: 50 },
+  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.2 } }
 }
 
 const AddStudent = () => {
@@ -72,16 +79,24 @@ const AddStudent = () => {
     <div className="container mx-auto p-4 h-full">
       <Card className="h-full flex flex-col relative">
         <CardHeader>
-          <CardTitle>Add Student</CardTitle>
-          <CardDescription>
-            Enter the student's details below. Use YYYY-MM-DD format for dates.
-          </CardDescription>
+          <motion.div variants={easeInVariants} initial="hidden" animate="visible">
+            <CardTitle>Add Student</CardTitle>
+            <CardDescription>
+              Enter the student's details below. Use YYYY-MM-DD format for dates.
+            </CardDescription>
+          </motion.div>
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden">
           <ScrollArea className="h-full p-4">
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <motion.form
+              onSubmit={handleSubmit}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              variants={easeInVariants}
+              initial="hidden"
+              animate="visible"
+            >
               {Object.keys(formData).map((field) => (
-                <div key={field} className="space-y-2">
+                <motion.div key={field} className="space-y-2" variants={easeInVariants}>
                   <Label htmlFor={field}>{formatLabel(field)}</Label>
                   <Input
                     type="text"
@@ -94,9 +109,9 @@ const AddStudent = () => {
                     pattern={field.includes('date') ? '\\d{4}-\\d{2}-\\d{2}' : undefined}
                     title={field.includes('date') ? 'Enter date in YYYY-MM-DD format' : undefined}
                   />
-                </div>
+                </motion.div>
               ))}
-            </form>
+            </motion.form>
           </ScrollArea>
         </CardContent>
         <div className="absolute bottom-6 right-6">
