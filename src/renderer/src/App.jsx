@@ -124,7 +124,7 @@ const App = () => {
           </div>
         </header>
         <main
-          className="flex-grow overflow-hidden p-4 relative z-0"
+          className="flex-grow overflow-hidden p-4 relative z-100"
           style={{
             backgroundImage: `url(${wavyLinesBg})`,
             backgroundRepeat: 'no-repeat',

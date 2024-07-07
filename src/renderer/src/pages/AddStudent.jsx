@@ -4,6 +4,18 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { UserPlus } from 'lucide-react'
+import { motion } from 'framer-motion'
+
+const iconVariants = {
+  hover: { scale: 1.2, transition: { type: 'spring', stiffness: 300 } },
+  tap: { scale: 0.8, transition: { type: 'spring', stiffness: 300 } }
+}
+
+const buttonVariants = {
+  hover: { scale: 1.05, transition: { type: 'spring', stiffness: 300 } },
+  tap: { scale: 0.95, transition: { type: 'spring', stiffness: 300 } }
+}
 
 const AddStudent = () => {
   const [formData, setFormData] = useState({
@@ -66,7 +78,7 @@ const AddStudent = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden">
-          <ScrollArea className="h-full p-4 ">
+          <ScrollArea className="h-full p-4">
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Object.keys(formData).map((field) => (
                 <div key={field} className="space-y-2">
@@ -88,12 +100,17 @@ const AddStudent = () => {
           </ScrollArea>
         </CardContent>
         <div className="absolute bottom-6 right-6">
-          <Button
-            onClick={handleSubmit}
-            className="shadow-lg hover:shadow-xl transition-shadow duration-300"
-          >
-            Add Student
-          </Button>
+          <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+            <Button
+              onClick={handleSubmit}
+              className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-2"
+            >
+              <motion.div variants={iconVariants}>
+                <UserPlus className="mr-2 h-4 w-4" />
+              </motion.div>
+              <span>Add Student</span>
+            </Button>
+          </motion.div>
         </div>
       </Card>
     </div>
