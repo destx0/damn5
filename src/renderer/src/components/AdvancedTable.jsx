@@ -2,6 +2,9 @@ import React, { useState, useCallback, useMemo } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
+import 'ag-grid-community/styles/ag-theme-quartz.css'
+
+import '@/assets/ag.css'
 import { ActionCellRenderer } from './ActionCellRenderer'
 import { columnDefs } from './columnDefs'
 
@@ -28,7 +31,7 @@ const AdvancedTable = ({ rowData, setRowData, onCellValueChanged, quickFilterTex
   )
 
   return (
-    <div className="ag-theme-alpine w-full h-full text-sm">
+    <div className="ag-theme-quartz w-full h-full text-sm">
       <AgGridReact
         rowData={rowData}
         columnDefs={columnDefinitions}
