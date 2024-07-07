@@ -7,8 +7,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { motion, AnimatePresence } from 'framer-motion'
 
 const container = {
-  hidden: { opacity: 1, scale: 0.5 },
+  hidden: { y: -100, opacity: 0, scale: 0.2 },
   visible: {
+    y: 0,
     opacity: 1,
     scale: 1,
     transition: {
@@ -20,9 +21,9 @@ const container = {
 }
 
 const item = {
-  hidden: { y: 10, opacity: 0 },
+  hidden: { y: -100, opacity: 0 },
   visible: { y: 0, opacity: 1 },
-  exit: { y: -10, opacity: 0 }
+  exit: { y: -100, opacity: 0 }
 }
 
 const iconVariants = {
