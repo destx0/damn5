@@ -88,7 +88,7 @@ const App = () => {
               variant="outline"
               className="flex items-center space-x-2"
             >
-              <RefreshCw size={18} />
+              <RefreshCw size={18} className={classNames({ 'rotate-animation': isRotating })} />
               <span>Refresh</span>
             </Button>
           </div>
