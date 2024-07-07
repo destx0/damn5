@@ -3,7 +3,8 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
-  importFileAndSave: () => ipcRenderer.invoke('import-file-and-save'),
+  openFileDialog: () => ipcRenderer.invoke('open-file-dialog'),
+  importFileAndSave: (filePath) => ipcRenderer.invoke('import-file-and-save', filePath),
   saveFileDialog: (content) => ipcRenderer.invoke('save-file-dialog', content),
   getStudents: () => ipcRenderer.invoke('get-students'),
   addStudent: (student) => ipcRenderer.invoke('add-student', student),
