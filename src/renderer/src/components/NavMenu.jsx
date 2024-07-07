@@ -5,8 +5,11 @@ import {
   NavigationMenuList,
   NavigationMenuItem,
   NavigationMenuLink,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
   navigationMenuTriggerStyle
 } from '@/components/ui/navigation-menu'
+import ImportExportCard from '@/components/ImportExportCard'
 
 const NavMenu = () => {
   const location = useLocation()
@@ -34,14 +37,10 @@ const NavMenu = () => {
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link to="/import-export" legacyBehavior passHref>
-            <NavigationMenuLink
-              className={navigationMenuTriggerStyle()}
-              active={isActive('/import-export')}
-            >
-              Import/Export
-            </NavigationMenuLink>
-          </Link>
+          <NavigationMenuTrigger>Import/Export</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ImportExportCard />
+          </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

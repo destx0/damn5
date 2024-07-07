@@ -3,20 +3,19 @@ import { HashRouter as Router, Route, Routes } from 'react-router-dom'
 import NavMenu from '@/components/NavMenu'
 import Home from '@/pages/Home'
 import AddStudent from '@/pages/AddStudent'
-import ImportExport from '@/pages/ImportExport'
 import wavyLinesBg from '@/assets/wavy-lines.svg'
 
 const App = () => {
   return (
     <Router>
       <div className="flex flex-col h-screen overflow-hidden bg-background">
-        <header className="flex-shrink-0 w-full border-b bg-background z-10">
+        <header className="flex-shrink-0 w-full border-b bg-background z-50">
           <div className="container flex h-16 items-center">
             <NavMenu />
           </div>
         </header>
         <main
-          className="flex-grow overflow-hidden p-4 relative"
+          className="flex-grow overflow-hidden p-4 relative z-0"
           style={{
             backgroundImage: `url(${wavyLinesBg})`,
             backgroundRepeat: 'no-repeat',
@@ -29,7 +28,6 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/add-student" element={<AddStudent />} />
-              <Route path="/import-export" element={<ImportExport />} />
             </Routes>
           </div>
         </main>
