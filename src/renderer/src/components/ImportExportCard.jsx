@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { motion } from 'framer-motion'
 
 const container = {
-  hidden: { opacity: 1, scale: 0 },
+  hidden: { opacity: 1, scale: 0.5 },
   visible: {
     opacity: 1,
     scale: 1,

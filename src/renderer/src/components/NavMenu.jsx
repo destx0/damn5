@@ -11,6 +11,12 @@ import {
 } from '@/components/ui/navigation-menu'
 import ImportExportCard from '@/components/ImportExportCard'
 import { Home, UserPlus, FileDown } from 'lucide-react'
+import { motion } from 'framer-motion'
+
+const iconVariants = {
+  hover: { scale: 1.2 },
+  tap: { scale: 0.8 }
+}
 
 const NavMenu = () => {
   const location = useLocation()
@@ -23,7 +29,9 @@ const NavMenu = () => {
         <NavigationMenuItem>
           <Link to="/" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()} active={isActive('/')}>
-              <Home className="mr-2 h-4 w-4" />
+              <motion.div variants={iconVariants} whileHover="hover" whileTap="tap">
+                <Home className="mr-2 h-4 w-4" />
+              </motion.div>
               Home
             </NavigationMenuLink>
           </Link>
@@ -34,14 +42,18 @@ const NavMenu = () => {
               className={navigationMenuTriggerStyle()}
               active={isActive('/add-student')}
             >
-              <UserPlus className="mr-2 h-4 w-4" />
+              <motion.div variants={iconVariants} whileHover="hover" whileTap="tap">
+                <UserPlus className="mr-2 h-4 w-4" />
+              </motion.div>
               Add Student
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuTrigger>
-            <FileDown className="mr-2 h-4 w-4" />
+            <motion.div variants={iconVariants} whileHover="hover" whileTap="tap">
+              <FileDown className="mr-2 h-4 w-4" />
+            </motion.div>
             Import/Export
           </NavigationMenuTrigger>
           <NavigationMenuContent>
