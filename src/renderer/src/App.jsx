@@ -7,9 +7,16 @@ import wavyLinesBg from '@/assets/wavy-lines.svg'
 import { Input } from '@renderer/components/ui/input'
 import { Button } from '@renderer/components/ui/button'
 import { Search, RefreshCw } from 'lucide-react'
+import classNames from 'classnames'
 
-const Logo = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 100 100">
+const Logo = ({ isRotating }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="40"
+    height="40"
+    viewBox="0 0 100 100"
+    className={classNames({ 'rotate-animation': isRotating })}
+  >
     <rect x="10" y="20" width="80" height="60" fill="#f0f0f0" stroke="#333" strokeWidth="2" />
     <rect
       x="15"
@@ -40,22 +47,25 @@ const Logo = () => (
 const App = () => {
   const [quickFilterText, setQuickFilterText] = useState('')
   const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [isRotating, setIsRotating] = useState(false)
 
   const handleQuickFilterChange = useCallback((event) => {
     setQuickFilterText(event.target.value)
   }, [])
 
   const handleRefresh = useCallback(() => {
+    setIsRotating(true)
     setRefreshTrigger((prev) => prev + 1)
+    setTimeout(() => setIsRotating(false), 1000) // Rotate for 1 second
   }, [])
 
   return (
     <Router>
       <div className="flex flex-col h-screen overflow-hidden bg-background">
-        <header className="flex-shrink-0 w-full border-b bg-background z-50">
+        <header className="flex-shrink-0 w-full border-b bg-background z-50 bg-gray-200">
           <div className="container flex h-16 items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <Logo />
+              <Logo isRotating={isRotating} />
               <h1 className="text-xl font-bold">Jaccd</h1>
             </div>
             <NavMenu />

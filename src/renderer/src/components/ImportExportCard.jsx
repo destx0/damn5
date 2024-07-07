@@ -1,31 +1,32 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Download, Upload, FileInput } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 
 const ImportExportCard = () => {
-  const [selectedFile, setSelectedFile] = useState(null)
-
-  const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0])
-  }
-
   const handleImport = async () => {
-    if (!selectedFile) {
-      alert('Please select a file to import.')
-      return
-    }
-
     try {
-      const result = await window.api.importFileAndSave(selectedFile.path)
-      if (result.success) {
+      const result = await window.api.openFileDialog({
+        title: 'Select File to Import',
+        filters: [
+          { name: 'CSV Files', extensions: ['csv'] },
+          { name: 'Excel Files', extensions: ['xlsx'] }
+        ],
+        properties: ['openFile']
+      })
+
+      if (result.canceled || !result.filePaths.length) {
+        return
+      }
+
+      const filePath = result.filePaths[0]
+      const importResult = await window.api.importFileAndSave(filePath)
+      if (importResult.success) {
         alert('File imported and data saved successfully!')
-        setSelectedFile(null) // Reset file input
       } else {
-        alert(`Failed to import and save file: ${result.reason || result.error}`)
+        alert(`Failed to import and save file: ${importResult.reason || importResult.error}`)
       }
     } catch (error) {
       console.error('Import error:', error)
@@ -109,28 +110,19 @@ const ImportExportCard = () => {
       </CardHeader>
       <CardContent className="grid gap-6">
         <div className="grid gap-2">
-          <Label htmlFor="importFile" className="text-sm font-medium">
+          <Label htmlFor="importButton" className="text-sm font-medium">
             Import File
           </Label>
-          <div className="flex items-center space-x-2">
-            <Input
-              id="importFile"
-              type="file"
-              accept=".csv,.xlsx"
-              onChange={handleFileChange}
-              className="flex-grow"
-            />
-            <Button
-              onClick={handleImport}
-              className="flex items-center justify-center"
-              disabled={!selectedFile}
-              size="sm"
-            >
-              <Upload className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            id="importButton"
+            onClick={handleImport}
+            className="flex items-center justify-center w-full"
+            variant="outline"
+          >
+            <Upload className="mr-2 h-4 w-4" /> Import CSV/XLSX
+          </Button>
           <p className="text-xs text-muted-foreground">
-            Select a CSV or XLSX file to import student data
+            Import student data from a CSV or XLSX file
           </p>
         </div>
 
