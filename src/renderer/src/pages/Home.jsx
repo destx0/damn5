@@ -1,9 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import AdvancedTable from '../components/AdvancedTable'
 import { Button } from '@renderer/components/ui/button'
+import { Input } from '@renderer/components/ui/input'
 
 const Home = () => {
   const [rowData, setRowData] = useState([])
+  const [quickFilterText, setQuickFilterText] = useState('')
 
   const fetchStudents = useCallback(async () => {
     try {
@@ -12,11 +14,11 @@ const Home = () => {
         setRowData(result.data)
       } else {
         console.error('Failed to fetch students:', result.error)
-        // Optionally, you can add a user-facing error message here
+        // Optionally, add a user-facing error message here
       }
     } catch (error) {
       console.error('Error fetching students:', error)
-      // Optionally, you can add a user-facing error message here
+      // Optionally, add a user-facing error message here
     }
   }, [])
 
@@ -38,13 +40,13 @@ const Home = () => {
           console.error('Failed to update student:', result.error)
           // Revert to original data if update fails
           fetchStudents()
-          // Optionally, you can add a user-facing error message here
+          // Optionally, add a user-facing error message here
         }
       } catch (error) {
         console.error('Error updating student:', error)
         // Revert to original data if update fails
         fetchStudents()
-        // Optionally, you can add a user-facing error message here
+        // Optionally, add a user-facing error message here
       }
     },
     [fetchStudents]
@@ -54,16 +56,30 @@ const Home = () => {
     fetchStudents()
   }, [fetchStudents])
 
+  const handleQuickFilterChange = useCallback((event) => {
+    setQuickFilterText(event.target.value)
+  }, [])
+
   return (
-    <div className="h-full flex flex-col">
-      <div className="mb-4">
-        <Button onClick={handleRefresh}>Refresh Data</Button>
+    <div className="h-full flex flex-col p-4">
+      <div className="mb-4 flex items-center space-x-4">
+        <Button onClick={handleRefresh} variant="outline">
+          Refresh Data
+        </Button>
+        <Input
+          type="text"
+          placeholder="Quick filter..."
+          value={quickFilterText}
+          onChange={handleQuickFilterChange}
+          className="max-w-sm"
+        />
       </div>
       <div className="flex-grow">
         <AdvancedTable
           rowData={rowData}
           setRowData={setRowData}
           onCellValueChanged={onCellValueChanged}
+          quickFilterText={quickFilterText}
         />
       </div>
     </div>

@@ -1,19 +1,23 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { ActionCellRenderer } from './ActionCellRenderer'
 import { columnDefs } from './columnDefs'
 
-const AdvancedTable = ({ rowData, setRowData, onCellValueChanged }) => {
+const AdvancedTable = ({ rowData, setRowData, onCellValueChanged, quickFilterText }) => {
   const [columnDefinitions] = useState(columnDefs)
 
-  const defaultColDef = {
-    sortable: true,
-    resizable: true,
-    width: 120,
-    editable: true
-  }
+  const defaultColDef = useMemo(
+    () => ({
+      sortable: true,
+      resizable: true,
+      width: 120,
+      editable: true,
+      filter: true // Enable filtering for all columns
+    }),
+    []
+  )
 
   const handleCellValueChanged = useCallback(
     (event) => {
@@ -37,6 +41,7 @@ const AdvancedTable = ({ rowData, setRowData, onCellValueChanged }) => {
         paginationPageSizeSelector={[10, 20, 50, 100]}
         headerHeight={32}
         rowHeight={32}
+        quickFilterText={quickFilterText} // Add this line for quick filter
       />
     </div>
   )
