@@ -14,7 +14,7 @@ const App = () => {
             <NavMenu />
           </div>
         </header>
-        <main className="flex-grow overflow-hidden">
+        <main className="flex-grow overflow-hidden p-4">
           <Routes>
             <Route exact path="/" element={<Home />} />
             <Route path="/add-student" element={<AddStudent />} />
