@@ -1,4 +1,16 @@
 import React, { useState } from 'react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 const AddStudent = () => {
   const [formData, setFormData] = useState({
@@ -47,39 +59,47 @@ const AddStudent = () => {
     }
   }
 
+  const formatLabel = (field) => {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')
+  }
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-        <h1 className="text-2xl font-bold mb-6">Add Student</h1>
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-          {Object.keys(formData).map((field) => (
-            <div key={field} className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={field}>
-                {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
-              </label>
-              <input
-                type={field.includes('date') ? 'date' : 'text'}
-                name={field}
-                value={formData[field]}
-                onChange={handleChange}
-                placeholder={
-                  field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')
-                }
-                required
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-          ))}
-          <div className="col-span-2 flex items-center justify-end mt-6">
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Add Student
-            </button>
-          </div>
-        </form>
-      </div>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+      <Card className="w-full max-w-4xl">
+        <CardHeader>
+          <CardTitle>Add Student</CardTitle>
+          <CardDescription>
+            Enter the student's details below. Use YYYY-MM-DD format for dates.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ScrollArea className="h-[60vh] pr-4">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {Object.keys(formData).map((field) => (
+                <div key={field} className="space-y-2">
+                  <Label htmlFor={field}>{formatLabel(field)}</Label>
+                  <Input
+                    type="text"
+                    id={field}
+                    name={field}
+                    value={formData[field]}
+                    onChange={handleChange}
+                    placeholder={field.includes('date') ? 'YYYY-MM-DD' : formatLabel(field)}
+                    required
+                    pattern={field.includes('date') ? '\\d{4}-\\d{2}-\\d{2}' : undefined}
+                    title={field.includes('date') ? 'Enter date in YYYY-MM-DD format' : undefined}
+                  />
+                </div>
+              ))}
+            </form>
+          </ScrollArea>
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          <Button type="submit" onClick={handleSubmit}>
+            Add Student
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   )
 }
