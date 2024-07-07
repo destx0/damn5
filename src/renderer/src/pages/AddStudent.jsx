@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { UserPlus } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { scale } from 'pdf-lib'
 
 const iconVariants = {
   hover: { scale: 1.2, transition: { type: 'spring', stiffness: 300 } },
@@ -13,13 +14,24 @@ const iconVariants = {
 }
 
 const buttonVariants = {
-  hidden: { opacity: 0, x: 450 },
-  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.3 } },
+  hidden: { opacity: 1, x: 450, scale: 0.01 },
+  visible: { opacity: 1, x: 0, scale: 1, transition: { ease: 'easeIn', duration: 0.3 } },
   hover: { scale: 1.05, transition: { type: 'spring', stiffness: 300 } },
   tap: { scale: 0.95, transition: { type: 'spring', stiffness: 300 } }
 }
 
-const formVariants = {
+const formContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      delayChildren: 0.01,
+      staggerChildren: 0.01
+    }
+  }
+}
+
+const formItemVariants = {
   hidden: { opacity: 0, x: 250 },
   visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.1 } }
 }
@@ -79,7 +91,7 @@ const AddStudent = () => {
     <div className="container mx-auto p-4 h-full">
       <Card className="h-full flex flex-col relative overflow-hidden">
         <CardHeader>
-          <motion.div variants={formVariants} initial="hidden" animate="visible">
+          <motion.div variants={formItemVariants} initial="hidden" animate="visible">
             <CardTitle>Add Student</CardTitle>
             <CardDescription>
               Enter the student's details below. Use YYYY-MM-DD format for dates.
@@ -91,12 +103,12 @@ const AddStudent = () => {
             <motion.form
               onSubmit={handleSubmit}
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
-              variants={formVariants}
+              variants={formContainerVariants}
               initial="hidden"
               animate="visible"
             >
               {Object.keys(formData).map((field) => (
-                <motion.div key={field} className="space-y-2" variants={formVariants}>
+                <motion.div key={field} className="space-y-2" variants={formItemVariants}>
                   <Label htmlFor={field}>{formatLabel(field)}</Label>
                   <Input
                     type="text"
@@ -115,8 +127,6 @@ const AddStudent = () => {
           </ScrollArea>
         </CardContent>
         <div className="absolute bottom-6 right-6 p-4">
-          {' '}
-          {/* Added padding */}
           <motion.div
             variants={buttonVariants}
             initial="hidden"

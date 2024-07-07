@@ -13,8 +13,8 @@ const container = {
     opacity: 1,
     scale: 1,
     transition: {
-      delayChildren: 0.1,
-      staggerChildren: 0.1
+      delayChildren: 0.01,
+      staggerChildren: 0.01
     }
   },
   exit: { opacity: 0, scale: 0.5, transition: { duration: 0.2 } }
@@ -30,8 +30,8 @@ const iconVariants = {
   hover: { scale: 1.2 },
   tap: { scale: 0.8 },
   hidden: { opacity: 0, y: -250 },
-  visible: { opacity: 1, y: 0, transition: { ease: 'easeIn', duration: 0.3 } },
-  exit: { opacity: 0, y: 250, transition: { ease: 'easeOut', duration: 0.3 } }
+  visible: { opacity: 1, y: 0, transition: { ease: 'easeIn', duration: 0.1 } },
+  exit: { opacity: 0, y: 250, transition: { ease: 'easeOut', duration: 0.1 } }
 }
 
 const ImportExportCard = () => {
