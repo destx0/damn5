@@ -11,10 +11,15 @@ import { motion } from 'framer-motion'
 import classNames from 'classnames'
 
 const iconVariants = {
-  hover: { scale: 1.2 },
-  tap: { scale: 0.8 },
-  hidden: { x: -50, opacity: 0 },
-  visible: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300 } }
+  hover: { scale: 1.2, transition: { type: 'spring', stiffness: 300 } },
+  tap: { scale: 0.8, transition: { type: 'spring', stiffness: 300 } }
+}
+
+const buttonVariants = {
+  hidden: { opacity: 1, x: 450, scale: 0.01 },
+  visible: { opacity: 1, x: 0, scale: 1, transition: { ease: 'easeIn', duration: 0.3 } },
+  hover: { scale: 1.05, transition: { type: 'spring', stiffness: 300 } },
+  tap: { scale: 0.95, transition: { type: 'spring', stiffness: 300 } }
 }
 
 const Logo = ({ isRotating }) => (
@@ -92,35 +97,31 @@ const App = () => {
                 onChange={handleQuickFilterChange}
                 className="pl-10 pr-4 py-2 w-64"
               />
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                whileHover="hover"
-                whileTap="tap"
-                variants={iconVariants}
-              >
+              <motion.div whileHover="hover" whileTap="tap" variants={iconVariants}>
                 <Search
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                   size={18}
                 />
               </motion.div>
             </div>
-            <Button
-              onClick={handleRefresh}
-              variant="outline"
-              className="flex items-center space-x-2"
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              whileHover="hover"
+              whileTap="tap"
+              variants={buttonVariants}
             >
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                whileHover="hover"
-                whileTap="tap"
-                variants={iconVariants}
+              <Button
+                onClick={handleRefresh}
+                variant="outline"
+                className="flex items-center space-x-2"
               >
-                <RefreshCw size={18} className={classNames({ 'rotate-animation': isRotating })} />
-              </motion.div>
-              <span>Refresh</span>
-            </Button>
+                <motion.div whileHover="hover" whileTap="tap" variants={iconVariants}>
+                  <RefreshCw size={18} className={classNames({ 'rotate-animation': isRotating })} />
+                </motion.div>
+                <span>Refresh</span>
+              </Button>
+            </motion.div>
           </div>
         </header>
         <main

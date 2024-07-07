@@ -27,7 +27,7 @@ const NavMenu = () => {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <Link to="/" legacyBehavior passHref>
+          <Link to="/">
             <NavigationMenuLink className={navigationMenuTriggerStyle()} active={isActive('/')}>
               <motion.div variants={iconVariants} whileHover="hover" whileTap="tap">
                 <Home className="mr-2 h-4 w-4" />
@@ -37,7 +37,7 @@ const NavMenu = () => {
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link to="/add-student" legacyBehavior passHref>
+          <Link to="/add-student">
             <NavigationMenuLink
               className={navigationMenuTriggerStyle()}
               active={isActive('/add-student')}
