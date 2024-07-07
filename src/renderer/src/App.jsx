@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import { HashRouter as Router, Route, Routes } from 'react-router-dom'
 import NavMenu from '@/components/NavMenu'
 import Home from '@/pages/Home'
 import AddStudent from '@/pages/AddStudent'
 import wavyLinesBg from '@/assets/wavy-lines.svg'
+import { Input } from '@renderer/components/ui/input'
+import { Button } from '@renderer/components/ui/button'
+import { Search, RefreshCw } from 'lucide-react'
 
 const Logo = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 100 100">
@@ -35,16 +38,49 @@ const Logo = () => (
 )
 
 const App = () => {
+  const [quickFilterText, setQuickFilterText] = useState('')
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
+
+  const handleQuickFilterChange = useCallback((event) => {
+    setQuickFilterText(event.target.value)
+  }, [])
+
+  const handleRefresh = useCallback(() => {
+    setRefreshTrigger((prev) => prev + 1)
+  }, [])
+
   return (
     <Router>
       <div className="flex flex-col h-screen overflow-hidden bg-background">
         <header className="flex-shrink-0 w-full border-b bg-background z-50">
-          <div className="container flex h-16 items-center justify-between">
+          <div className="container flex h-16 items-center space-x-4">
             <div className="flex items-center space-x-2">
               <Logo />
-              <h1 className="text-xl font-bold">JACCD</h1>
+              <h1 className="text-xl font-bold">Jaccd</h1>
             </div>
             <NavMenu />
+            <div className="flex-grow"></div>
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Quick filter..."
+                value={quickFilterText}
+                onChange={handleQuickFilterChange}
+                className="pl-10 pr-4 py-2 w-64"
+              />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+            </div>
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
+              className="flex items-center space-x-2"
+            >
+              <RefreshCw size={18} />
+              <span>Refresh</span>
+            </Button>
           </div>
         </header>
         <main
@@ -59,7 +95,10 @@ const App = () => {
           <div className="absolute inset-0 bg-background/70 backdrop-blur-sm"></div>
           <div className="relative z-10 h-full overflow-auto">
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route
+                path="/"
+                element={<Home quickFilterText={quickFilterText} refreshTrigger={refreshTrigger} />}
+              />
               <Route path="/add-student" element={<AddStudent />} />
             </Routes>
           </div>

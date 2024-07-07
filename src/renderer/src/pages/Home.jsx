@@ -1,12 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import AdvancedTable from '../components/AdvancedTable'
-import { Button } from '@renderer/components/ui/button'
-import { Input } from '@renderer/components/ui/input'
-import { Search, RefreshCw } from 'lucide-react'
 
-const Home = () => {
+const Home = ({ quickFilterText, refreshTrigger }) => {
   const [rowData, setRowData] = useState([])
-  const [quickFilterText, setQuickFilterText] = useState('')
 
   const fetchStudents = useCallback(async () => {
     try {
@@ -25,7 +21,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchStudents()
-  }, [fetchStudents])
+  }, [fetchStudents, refreshTrigger])
 
   const onCellValueChanged = useCallback(
     async (event) => {
@@ -48,38 +44,9 @@ const Home = () => {
     [fetchStudents]
   )
 
-  const handleRefresh = useCallback(() => {
-    fetchStudents()
-  }, [fetchStudents])
-
-  const handleQuickFilterChange = useCallback((event) => {
-    setQuickFilterText(event.target.value)
-  }, [])
-
   return (
-    <div className="h-full flex flex-col p-4">
-      <div className="mb-6 flex justify-center items-center space-x-4 ">
-        <div className="flex items-center max-w-md w-full">
-          <div className="relative w-full">
-            <Input
-              type="text"
-              placeholder="Quick filter..."
-              value={quickFilterText}
-              onChange={handleQuickFilterChange}
-              className="pl-10 pr-4 py-2 w-full"
-            />
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={18}
-            />
-          </div>
-        </div>
-        <Button onClick={handleRefresh} variant="outline" className="flex items-center space-x-2">
-          <RefreshCw size={18} />
-          <span>Refresh</span>
-        </Button>
-      </div>
-      <div className="flex-grow px-4">
+    <div className="h-full flex flex-col">
+      <div className="flex-grow p-4">
         <AdvancedTable
           rowData={rowData}
           setRowData={setRowData}
