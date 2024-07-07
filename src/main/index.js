@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
 import * as XLSX from 'xlsx'
+import { parse } from 'csv-parse/sync' // Corrected import statement
 import sqlite3 from 'sqlite3'
 import { open } from 'sqlite'
 
@@ -116,11 +117,27 @@ function createWindow() {
   }
 }
 
-function excelDateToJSDate(serial) {
-  const utc_days = Math.floor(serial - 25569)
-  const utc_value = utc_days * 86400
-  const date_info = new Date(utc_value * 1000)
-  return date_info.toISOString().split('T')[0] // Returns YYYY-MM-DD
+function parseDate(value) {
+  if (typeof value === 'number') {
+    // Excel date serial number
+    const utc_days = Math.floor(value - 25569)
+    const utc_value = utc_days * 86400
+    const date_info = new Date(utc_value * 1000)
+    return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate())
+  } else if (typeof value === 'string') {
+    // Try parsing as ISO date string
+    const date = new Date(value)
+    if (!isNaN(date.getTime())) {
+      return date
+    }
+    // If that fails, try DD/MM/YYYY format
+    const parts = value.split('/')
+    if (parts.length === 3) {
+      return new Date(parts[2], parts[1] - 1, parts[0])
+    }
+  }
+  // If all parsing attempts fail, return null
+  return null
 }
 
 app.whenReady().then(async () => {
@@ -132,31 +149,36 @@ app.whenReady().then(async () => {
 
   await initializeDatabase()
 
-  ipcMain.handle('import-excel-and-save', async () => {
-    console.log('Import Excel and save called')
+  ipcMain.handle('import-file-and-save', async () => {
+    console.log('Import file and save called')
     try {
       const result = await dialog.showOpenDialog({
         properties: ['openFile'],
-        filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
+        filters: [{ name: 'Spreadsheets', extensions: ['xlsx', 'xls', 'csv'] }]
       })
       console.log('Open file dialog result:', result)
       if (!result.canceled && result.filePaths.length > 0) {
         const filePath = result.filePaths[0]
         console.log('Reading file:', filePath)
-        const workbook = XLSX.readFile(filePath)
-        console.log('Workbook read successfully')
-        const worksheetName = workbook.SheetNames[0]
-        console.log('First worksheet name:', worksheetName)
-        const worksheet = workbook.Sheets[worksheetName]
-        const data = XLSX.utils.sheet_to_json(worksheet)
+
+        let data
+        if (filePath.endsWith('.csv')) {
+          const fileContent = fs.readFileSync(filePath, 'utf8')
+          data = parse(fileContent, { columns: true, skip_empty_lines: true })
+        } else {
+          const workbook = XLSX.readFile(filePath)
+          const worksheetName = workbook.SheetNames[0]
+          const worksheet = workbook.Sheets[worksheetName]
+          data = XLSX.utils.sheet_to_json(worksheet)
+        }
         console.log('Parsed data:', data)
 
         await db.run('BEGIN TRANSACTION')
         for (const item of data) {
-          // Convert date fields
-          if (item.dob) item.dob = excelDateToJSDate(item.dob)
-          if (item.dateOfAdmission) item.dateOfAdmission = excelDateToJSDate(item.dateOfAdmission)
-          if (item.dateOfLeaving) item.dateOfLeaving = excelDateToJSDate(item.dateOfLeaving)
+          // Parse date fields
+          const dob = parseDate(item.dob)
+          const dateOfAdmission = parseDate(item.dateOfAdmission)
+          const dateOfLeaving = parseDate(item.dateOfLeaving)
 
           await db.run(
             `
@@ -182,14 +204,14 @@ app.whenReady().then(async () => {
               item.taluka,
               item.district,
               item.state,
-              item.dob,
+              dob ? dob.toISOString().split('T')[0] : null,
               item.lastAttendedSchool,
               item.lastSchoolStandard,
-              item.dateOfAdmission,
+              dateOfAdmission ? dateOfAdmission.toISOString().split('T')[0] : null,
               item.admissionStandard,
               item.progress,
               item.conduct,
-              item.dateOfLeaving,
+              dateOfLeaving ? dateOfLeaving.toISOString().split('T')[0] : null,
               item.currentStandard,
               item.reasonOfLeaving,
               item.remarks
@@ -204,7 +226,7 @@ app.whenReady().then(async () => {
       }
       return { success: false, reason: 'No file selected' }
     } catch (error) {
-      console.error('Error in import Excel and save:', error)
+      console.error('Error in import file and save:', error)
       await db.run('ROLLBACK')
       return { success: false, error: error.message }
     }

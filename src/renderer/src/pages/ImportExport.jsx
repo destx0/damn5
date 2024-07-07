@@ -2,14 +2,19 @@ import React from 'react'
 
 const ImportExport = () => {
   const handleImport = async () => {
+    console.log('Import button clicked')
+    console.log('window.api:', window.api)
     try {
-      const result = await window.api.importExcelAndSave()
+      console.log('Calling importFileAndSave')
+      const result = await window.api.importFileAndSave()
+      console.log('Import result:', result)
       if (result.success) {
         alert('File imported and data saved successfully!')
       } else {
         alert(`Failed to import and save file: ${result.reason || result.error}`)
       }
     } catch (error) {
+      console.error('Import error:', error)
       alert(`Failed to import and save file: ${error.message}`)
     }
   }
@@ -75,6 +80,7 @@ const ImportExport = () => {
         alert(`Failed to export file: ${result.error}`)
       }
     } catch (error) {
+      console.error('Export error:', error)
       alert(`Failed to export file: ${error.message}`)
     }
   }
@@ -87,7 +93,7 @@ const ImportExport = () => {
           onClick={handleImport}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Import from Excel
+          Import from Excel/CSV
         </button>
         <button
           onClick={handleExport}
