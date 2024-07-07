@@ -35,7 +35,7 @@ async function initializeDatabase() {
         taluka TEXT,
         district TEXT,
         state TEXT,
-        dob TEXT,
+        dateOfBirth TEXT,
         lastAttendedSchool TEXT,
         lastSchoolStandard TEXT,
         dateOfAdmission TEXT,
@@ -153,7 +153,7 @@ app.whenReady().then(async () => {
 
       await db.run('BEGIN TRANSACTION')
       for (const item of data) {
-        const dob = parseDate(item.dob)
+        const dateOfBirth = parseDate(item.dateOfBirth)
         const dateOfAdmission = parseDate(item.dateOfAdmission)
         const dateOfLeaving = parseDate(item.dateOfLeaving)
 
@@ -162,7 +162,7 @@ app.whenReady().then(async () => {
           INSERT OR REPLACE INTO students (
             studentId, aadharNo, name, surname, fathersName, mothersName,
             religion, caste, subCaste, placeOfBirth, taluka, district, state,
-            dob, lastAttendedSchool, lastSchoolStandard, dateOfAdmission,
+            dateOfBirth, lastAttendedSchool, lastSchoolStandard, dateOfAdmission,
             admissionStandard, progress, conduct, dateOfLeaving, currentStandard,
             reasonOfLeaving, remarks
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -181,7 +181,7 @@ app.whenReady().then(async () => {
             item.taluka,
             item.district,
             item.state,
-            dob ? dob.toISOString().split('T')[0] : null,
+            dateOfBirth ? dateOfBirth.toISOString().split('T')[0] : null,
             item.lastAttendedSchool,
             item.lastSchoolStandard,
             dateOfAdmission ? dateOfAdmission.toISOString().split('T')[0] : null,
@@ -223,7 +223,7 @@ app.whenReady().then(async () => {
         INSERT OR REPLACE INTO students (
           studentId, aadharNo, name, surname, fathersName, mothersName,
           religion, caste, subCaste, placeOfBirth, taluka, district, state,
-          dob, lastAttendedSchool, lastSchoolStandard, dateOfAdmission,
+          dateOfBirth, lastAttendedSchool, lastSchoolStandard, dateOfAdmission,
           admissionStandard, progress, conduct, dateOfLeaving, currentStandard,
           reasonOfLeaving, remarks
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -242,7 +242,7 @@ app.whenReady().then(async () => {
           student.taluka,
           student.district,
           student.state,
-          student.dob,
+          student.dateOfBirth,
           student.lastAttendedSchool,
           student.lastSchoolStandard,
           student.dateOfAdmission,
@@ -268,7 +268,7 @@ app.whenReady().then(async () => {
         UPDATE students SET
           aadharNo = ?, name = ?, surname = ?, fathersName = ?,
           mothersName = ?, religion = ?, caste = ?, subCaste = ?, placeOfBirth = ?,
-          taluka = ?, district = ?, state = ?, dob = ?, lastAttendedSchool = ?,
+          taluka = ?, district = ?, state = ?, dateOfBirth = ?, lastAttendedSchool = ?,
           lastSchoolStandard = ?, dateOfAdmission = ?, admissionStandard = ?,
           progress = ?, conduct = ?, dateOfLeaving = ?, currentStandard = ?,
           reasonOfLeaving = ?, remarks = ?
@@ -287,7 +287,7 @@ app.whenReady().then(async () => {
           student.taluka,
           student.district,
           student.state,
-          student.dob,
+          student.dateOfBirth,
           student.lastAttendedSchool,
           student.lastSchoolStandard,
           student.dateOfAdmission,
@@ -308,10 +308,24 @@ app.whenReady().then(async () => {
   })
 
   ipcMain.handle('delete-student', async (event, studentId) => {
+    console.log(`Attempting to delete student with ID: ${studentId}`)
     try {
-      await db.run('DELETE FROM students WHERE studentId = ?', studentId)
-      return { success: true }
+      await db.run('BEGIN TRANSACTION')
+      const result = await db.run('DELETE FROM students WHERE studentId = ?', studentId)
+      await db.run('COMMIT')
+
+      console.log('Delete operation result:', result)
+
+      if (result.changes === 0) {
+        console.log(`No student found with ID: ${studentId}`)
+        return { success: false, error: 'Student not found' }
+      }
+
+      console.log(`Successfully deleted student with ID: ${studentId}`)
+      return { success: true, deletedRows: result.changes }
     } catch (error) {
+      await db.run('ROLLBACK')
+      console.error('Error in delete operation:', error)
       return { success: false, error: error.message }
     }
   })

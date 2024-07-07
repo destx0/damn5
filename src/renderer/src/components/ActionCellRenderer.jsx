@@ -14,7 +14,7 @@ export const ActionCellRenderer = (params) => {
   const handleDelete = async () => {
     console.log('Delete clicked for row:', params.data)
     try {
-      const result = await window.api.deleteStudent(params.data.id)
+      const result = await window.api.deleteStudent(params.data.studentId)
       if (result.success) {
         toast.success(
           'Student Deleted',

@@ -69,7 +69,7 @@ const ImportExportCard = () => {
           'taluka',
           'district',
           'state',
-          'dob',
+          'dateOfBirth',
           'lastAttendedSchool',
           'lastSchoolStandard',
           'dateOfAdmission',
@@ -89,7 +89,7 @@ const ImportExportCard = () => {
                 let value = student[header]
                 if (
                   typeof value === 'string' &&
-                  ['dob', 'dateOfAdmission', 'dateOfLeaving'].includes(header)
+                  ['dateOfBirth', 'dateOfAdmission', 'dateOfLeaving'].includes(header)
                 ) {
                   const date = new Date(value)
                   value = date.toISOString().split('T')[0]

@@ -32,7 +32,7 @@ export const columnDefs = [
     editable: true
   },
   {
-    field: 'dob',
+    field: 'dateOfBirth',
     headerName: 'Date of Birth',
     filter: 'agTextColumnFilter',
     floatingFilter: true,

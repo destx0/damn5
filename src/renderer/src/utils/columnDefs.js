@@ -15,7 +15,7 @@ const columnDefs = [
   { field: 'taluka', headerName: 'Taluka', editable: true },
   { field: 'district', headerName: 'District', editable: true },
   { field: 'state', headerName: 'State', editable: true },
-  { field: 'dob', headerName: 'Date of Birth', editable: true },
+  { field: 'dateOfBirth', headerName: 'Date of Birth', editable: true },
   { field: 'lastAttendedSchool', headerName: 'Last Attended School', editable: true },
   { field: 'lastSchoolStandard', headerName: 'Last School Standard', editable: true },
   { field: 'dateOfAdmission', headerName: 'Date of Admission', editable: true },
