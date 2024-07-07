@@ -141,9 +141,7 @@ const App = () => {
               />
               <Route path="/add-student" element={<AddStudent />} />
             </Routes>
-            <Button onClick={toggleSelection} className="mt-4">
-              Toggle Selection
-            </Button>
+
             {isSelected ? <motion.div layoutId="underline" className="underline" /> : null}
             {!isSelected ? <motion.div layoutId="underline" className="underline" /> : null}
           </div>
