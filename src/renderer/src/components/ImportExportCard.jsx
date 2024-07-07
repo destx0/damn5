@@ -4,6 +4,27 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Download, Upload, FileInput } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { motion } from 'framer-motion'
+
+const container = {
+  hidden: { opacity: 1, scale: 0 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      delayChildren: 0.2,
+      staggerChildren: 0.2
+    }
+  }
+}
+
+const item = {
+  hidden: { y: 10, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1
+  }
+}
 
 const ImportExportCard = () => {
   const handleImport = async () => {
@@ -100,50 +121,52 @@ const ImportExportCard = () => {
   }
 
   return (
-    <Card className="w-[400px]">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <FileInput className="h-5 w-5" />
-          <span>Import/Export</span>
-        </CardTitle>
-        <CardDescription>Manage your student data</CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-6">
-        <div className="grid gap-2">
-          <Label htmlFor="importButton" className="text-sm font-medium">
-            Import File
-          </Label>
-          <Button
-            id="importButton"
-            onClick={handleImport}
-            className="flex items-center justify-center w-full"
-            variant="outline"
-          >
-            <Upload className="mr-2 h-4 w-4" /> Import CSV/XLSX
-          </Button>
-          <p className="text-xs text-muted-foreground">
-            Import student data from a CSV or XLSX file
-          </p>
-        </div>
+    <motion.div className="w-[400px]" variants={container} initial="hidden" animate="visible">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <FileInput className="h-5 w-5" />
+            <span>Import/Export</span>
+          </CardTitle>
+          <CardDescription>Manage your student data</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          <motion.div className="grid gap-2" variants={item}>
+            <Label htmlFor="importButton" className="text-sm font-medium">
+              Import File
+            </Label>
+            <Button
+              id="importButton"
+              onClick={handleImport}
+              className="flex items-center justify-center w-full"
+              variant="outline"
+            >
+              <Upload className="mr-2 h-4 w-4" /> Import CSV/XLSX
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Import student data from a CSV or XLSX file
+            </p>
+          </motion.div>
 
-        <Separator />
+          <Separator />
 
-        <div className="grid gap-2">
-          <Label htmlFor="exportButton" className="text-sm font-medium">
-            Export Data
-          </Label>
-          <Button
-            id="exportButton"
-            onClick={handleExport}
-            className="flex items-center justify-center w-full"
-            variant="outline"
-          >
-            <Download className="mr-2 h-4 w-4" /> Export to XLSX
-          </Button>
-          <p className="text-xs text-muted-foreground">Export all student data to an XLSX file</p>
-        </div>
-      </CardContent>
-    </Card>
+          <motion.div className="grid gap-2" variants={item}>
+            <Label htmlFor="exportButton" className="text-sm font-medium">
+              Export Data
+            </Label>
+            <Button
+              id="exportButton"
+              onClick={handleExport}
+              className="flex items-center justify-center w-full"
+              variant="outline"
+            >
+              <Download className="mr-2 h-4 w-4" /> Export to XLSX
+            </Button>
+            <p className="text-xs text-muted-foreground">Export all student data to an XLSX file</p>
+          </motion.div>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
 
