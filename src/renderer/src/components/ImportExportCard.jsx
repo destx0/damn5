@@ -37,21 +37,7 @@ const iconVariants = {
 const ImportExportCard = () => {
   const handleImport = async () => {
     try {
-      const result = await window.api.openFileDialog({
-        title: 'Select File to Import',
-        filters: [
-          { name: 'CSV Files', extensions: ['csv'] },
-          { name: 'Excel Files', extensions: ['xlsx'] }
-        ],
-        properties: ['openFile']
-      })
-
-      if (result.canceled || !result.filePaths.length) {
-        return
-      }
-
-      const filePath = result.filePaths[0]
-      const importResult = await window.api.importFileAndSave(filePath)
+      const importResult = await window.api.importFileAndSave()
       if (importResult.success) {
         alert('File imported and data saved successfully!')
       } else {
