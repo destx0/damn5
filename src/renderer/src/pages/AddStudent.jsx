@@ -8,18 +8,18 @@ import { UserPlus } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const iconVariants = {
-  hidden: { opacity: 0, x: 50 },
-  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.2 } },
   hover: { scale: 1.2, transition: { type: 'spring', stiffness: 300 } },
   tap: { scale: 0.8, transition: { type: 'spring', stiffness: 300 } }
 }
 
 const buttonVariants = {
+  hidden: { opacity: 0, x: 250 },
+  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.2 } },
   hover: { scale: 1.05, transition: { type: 'spring', stiffness: 300 } },
   tap: { scale: 0.95, transition: { type: 'spring', stiffness: 300 } }
 }
 
-const easeInVariants = {
+const formVariants = {
   hidden: { opacity: 0, x: 50 },
   visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.2 } }
 }
@@ -77,9 +77,9 @@ const AddStudent = () => {
 
   return (
     <div className="container mx-auto p-4 h-full">
-      <Card className="h-full flex flex-col relative">
+      <Card className="h-full flex flex-col relative overflow-hidden">
         <CardHeader>
-          <motion.div variants={easeInVariants} initial="hidden" animate="visible">
+          <motion.div variants={formVariants} initial="hidden" animate="visible">
             <CardTitle>Add Student</CardTitle>
             <CardDescription>
               Enter the student's details below. Use YYYY-MM-DD format for dates.
@@ -91,12 +91,12 @@ const AddStudent = () => {
             <motion.form
               onSubmit={handleSubmit}
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
-              variants={easeInVariants}
+              variants={formVariants}
               initial="hidden"
               animate="visible"
             >
               {Object.keys(formData).map((field) => (
-                <motion.div key={field} className="space-y-2" variants={easeInVariants}>
+                <motion.div key={field} className="space-y-2" variants={formVariants}>
                   <Label htmlFor={field}>{formatLabel(field)}</Label>
                   <Input
                     type="text"
@@ -114,8 +114,16 @@ const AddStudent = () => {
             </motion.form>
           </ScrollArea>
         </CardContent>
-        <div className="absolute bottom-6 right-6">
-          <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+        <div className="absolute bottom-6 right-6 p-4">
+          {' '}
+          {/* Added padding */}
+          <motion.div
+            variants={buttonVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover="hover"
+            whileTap="tap"
+          >
             <Button
               onClick={handleSubmit}
               className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-2"
