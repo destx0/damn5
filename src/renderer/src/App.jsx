@@ -10,13 +10,21 @@ import { Search, RefreshCw } from 'lucide-react'
 import { motion } from 'framer-motion'
 import classNames from 'classnames'
 
+const iconVariants = {
+  hover: { scale: 1.2 },
+  tap: { scale: 0.8 },
+  hidden: { x: -50, opacity: 0 },
+  visible: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300 } }
+}
+
 const Logo = ({ isRotating }) => (
-  <svg
+  <motion.svg
     xmlns="http://www.w3.org/2000/svg"
     width="40"
     height="40"
     viewBox="0 0 100 100"
     className={classNames({ 'rotate-animation': isRotating })}
+    whileHover={{ rotate: 360 }}
   >
     <rect x="10" y="20" width="80" height="60" fill="#f0f0f0" stroke="#333" strokeWidth="2" />
     <rect
@@ -42,7 +50,7 @@ const Logo = ({ isRotating }) => (
     <path d="M30 80 Q50 90 70 80" fill="none" stroke="#333" strokeWidth="2" />
     <circle cx="50" cy="85" r="8" fill="#ffd700" stroke="#333" strokeWidth="1" />
     <path d="M46 85 L50 89 L54 82" fill="none" stroke="#333" strokeWidth="1.5" />
-  </svg>
+  </motion.svg>
 )
 
 const App = () => {
@@ -84,17 +92,33 @@ const App = () => {
                 onChange={handleQuickFilterChange}
                 className="pl-10 pr-4 py-2 w-64"
               />
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={18}
-              />
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                whileHover="hover"
+                whileTap="tap"
+                variants={iconVariants}
+              >
+                <Search
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+              </motion.div>
             </div>
             <Button
               onClick={handleRefresh}
               variant="outline"
               className="flex items-center space-x-2"
             >
-              <RefreshCw size={18} className={classNames({ 'rotate-animation': isRotating })} />
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                whileHover="hover"
+                whileTap="tap"
+                variants={iconVariants}
+              >
+                <RefreshCw size={18} className={classNames({ 'rotate-animation': isRotating })} />
+              </motion.div>
               <span>Refresh</span>
             </Button>
           </div>
@@ -121,7 +145,7 @@ const App = () => {
               Toggle Selection
             </Button>
             {isSelected ? <motion.div layoutId="underline" className="underline" /> : null}
-            {isSelected ? <motion.div layoutId="underline" className="underline" /> : null}
+            {!isSelected ? <motion.div layoutId="underline" className="underline" /> : null}
           </div>
         </main>
       </div>
