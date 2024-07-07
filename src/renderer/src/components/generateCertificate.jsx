@@ -1,5 +1,6 @@
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
+import { toast } from 'sonner'
 
 const generateCertificate = async (student) => {
   try {
@@ -83,8 +84,16 @@ const generateCertificate = async (student) => {
 
     // Remove the temporary div
     document.body.removeChild(certificateContainer)
+
+    // Show success toast
+    toast.success(
+      'Certificate Generated',
+      'The comprehensive A4 certificate has been generated and downloaded.'
+    )
   } catch (error) {
     console.error('Error generating certificate:', error)
+    // Show error toast
+    toast.error('Error', 'There was an error generating the certificate. Please try again.')
     throw error // Rethrow the error to be caught by the caller
   }
 }

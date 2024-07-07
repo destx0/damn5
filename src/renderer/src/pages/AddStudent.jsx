@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { UserPlus } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { scale } from 'pdf-lib'
+import { toast } from 'sonner'
 
 const iconVariants = {
   hover: { scale: 1.2, transition: { type: 'spring', stiffness: 300 } },
@@ -74,12 +74,42 @@ const AddStudent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const result = await window.api.addStudent(formData)
-    if (result.success) {
-      alert('Student added successfully!')
-      setFormData({}) // Reset form
-    } else {
-      alert('Failed to add student. Please try again.')
+    try {
+      const result = await window.api.addStudent(formData)
+      if (result.success) {
+        toast.success('Student added successfully!')
+        setFormData({
+          studentId: '',
+          aadharNo: '',
+          name: '',
+          surname: '',
+          fathersName: '',
+          mothersName: '',
+          religion: '',
+          caste: '',
+          subCaste: '',
+          placeOfBirth: '',
+          taluka: '',
+          district: '',
+          state: '',
+          dob: '',
+          lastAttendedSchool: '',
+          lastSchoolStandard: '',
+          dateOfAdmission: '',
+          admissionStandard: '',
+          progress: '',
+          conduct: '',
+          dateOfLeaving: '',
+          currentStandard: '',
+          reasonOfLeaving: '',
+          remarks: ''
+        }) // Reset form
+      } else {
+        toast.error('Failed to add student. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error adding student:', error)
+      toast.error(`Failed to add student: ${error.message}`)
     }
   }
 

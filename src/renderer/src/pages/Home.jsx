@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import AdvancedTable from '../components/AdvancedTable'
 import { motion } from 'framer-motion'
+import { toast } from 'sonner'
 
 const easeInVariants = {
   hidden: { opacity: 0, x: -250 },
@@ -15,13 +16,14 @@ const Home = ({ quickFilterText, refreshTrigger }) => {
       const result = await window.api.getStudents()
       if (result.success) {
         setRowData(result.data)
+        toast.success('Students fetched successfully!')
       } else {
         console.error('Failed to fetch students:', result.error)
-        // Optionally, add a user-facing error message here
+        toast.error('Failed to fetch students:', result.error)
       }
     } catch (error) {
       console.error('Error fetching students:', error)
-      // Optionally, add a user-facing error message here
+      toast.error('Error fetching students:', error.message)
     }
   }, [])
 
@@ -38,12 +40,15 @@ const Home = ({ quickFilterText, refreshTrigger }) => {
           setRowData((prevRowData) =>
             prevRowData.map((row) => (row.id === updatedStudent.id ? updatedStudent : row))
           )
+          toast.success('Student updated successfully!')
         } else {
           console.error('Failed to update student:', result.error)
+          toast.error('Failed to update student:', result.error)
           fetchStudents()
         }
       } catch (error) {
         console.error('Error updating student:', error)
+        toast.error('Error updating student:', error.message)
         fetchStudents()
       }
     },

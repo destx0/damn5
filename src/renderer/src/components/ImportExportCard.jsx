@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator'
 import { Download, Upload, FileInput } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'sonner'
 
 const container = {
   hidden: { y: -100, opacity: 0, scale: 0.2 },
@@ -39,13 +40,13 @@ const ImportExportCard = () => {
     try {
       const importResult = await window.api.importFileAndSave()
       if (importResult.success) {
-        alert('File imported and data saved successfully!')
+        toast.success('File imported and data saved successfully!')
       } else {
-        alert(`Failed to import and save file: ${importResult.reason || importResult.error}`)
+        toast.error(`Failed to import and save file: ${importResult.reason || importResult.error}`)
       }
     } catch (error) {
       console.error('Import error:', error)
-      alert(`Failed to import and save file: ${error.message}`)
+      toast.error(`Failed to import and save file: ${error.message}`)
     }
   }
 
@@ -101,16 +102,18 @@ const ImportExportCard = () => {
 
         const exportResult = await window.api.saveFileDialog(`${headers.join(',')}\n${csvContent}`)
         if (exportResult.success) {
-          alert('File exported successfully!')
+          toast.success('File exported successfully!')
         } else {
-          alert(`File export was cancelled or failed: ${exportResult.reason || exportResult.error}`)
+          toast.error(
+            `File export was cancelled or failed: ${exportResult.reason || exportResult.error}`
+          )
         }
       } else {
-        alert(`Failed to export file: ${result.error}`)
+        toast.error(`Failed to export file: ${result.error}`)
       }
     } catch (error) {
       console.error('Export error:', error)
-      alert(`Failed to export file: ${error.message}`)
+      toast.error(`Failed to export file: ${error.message}`)
     }
   }
 

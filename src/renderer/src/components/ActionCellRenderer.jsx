@@ -7,21 +7,19 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import { useToast } from '@/components/ui/use-toast'
+import { toast } from 'sonner'
 import generateCertificate from './generateCertificate'
 
 export const ActionCellRenderer = (params) => {
-  const { toast } = useToast()
-
   const handleDelete = async () => {
     console.log('Delete clicked for row:', params.data)
     try {
       const result = await window.api.deleteStudent(params.data.id)
       if (result.success) {
-        toast({
-          title: 'Student Deleted',
-          description: 'The student has been successfully deleted from the database.'
-        })
+        toast.success(
+          'Student Deleted',
+          'The student has been successfully deleted from the database.'
+        )
         // Refresh the grid data
         params.api.applyTransaction({ remove: [params.data] })
       } else {
@@ -29,28 +27,20 @@ export const ActionCellRenderer = (params) => {
       }
     } catch (error) {
       console.error('Error deleting student:', error)
-      toast({
-        title: 'Error',
-        description: 'There was an error deleting the student. Please try again.',
-        variant: 'destructive'
-      })
+      toast.error('Error', 'There was an error deleting the student. Please try again.')
     }
   }
 
   const handleGenerateCertificate = async () => {
     try {
       await generateCertificate(params.data)
-      toast({
-        title: 'Certificate Generated',
-        description: 'The comprehensive A4 certificate has been generated and downloaded.'
-      })
+      toast.success(
+        'Certificate Generated',
+        'The comprehensive A4 certificate has been generated and downloaded.'
+      )
     } catch (error) {
       console.error('Error generating certificate:', error)
-      toast({
-        title: 'Error',
-        description: 'There was an error generating the certificate. Please try again.',
-        variant: 'destructive'
-      })
+      toast.error('Error', 'There was an error generating the certificate. Please try again.')
     }
   }
 
