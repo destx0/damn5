@@ -20,11 +20,11 @@ async function initializeDatabase() {
   const tableInfo = await db.all("PRAGMA table_info('students')")
 
   if (tableInfo.length === 0) {
-    // If the table doesn't exist, create it with all fields
+    // If the table doesn't exist, create it with all fields and make studentId unique
     await db.exec(`
       CREATE TABLE students (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        studentId TEXT,
+        studentId TEXT UNIQUE,
         aadharNo TEXT,
         name TEXT,
         surname TEXT,
@@ -51,39 +51,13 @@ async function initializeDatabase() {
       )
     `)
   } else {
-    // If the table exists, check for missing columns and add them
-    const existingColumns = tableInfo.map((column) => column.name)
-    const allColumns = [
-      'studentId',
-      'aadharNo',
-      'name',
-      'surname',
-      'fathersName',
-      'mothersName',
-      'religion',
-      'caste',
-      'subCaste',
-      'placeOfBirth',
-      'taluka',
-      'district',
-      'state',
-      'dob',
-      'lastAttendedSchool',
-      'lastSchoolStandard',
-      'dateOfAdmission',
-      'admissionStandard',
-      'progress',
-      'conduct',
-      'dateOfLeaving',
-      'currentStandard',
-      'reasonOfLeaving',
-      'remarks'
-    ]
+    // If the table exists, check if studentId is unique
+    const indexInfo = await db.all("PRAGMA index_list('students')")
+    const studentIdIndex = indexInfo.find((index) => index.name === 'idx_studentId')
 
-    for (const column of allColumns) {
-      if (!existingColumns.includes(column)) {
-        await db.exec(`ALTER TABLE students ADD COLUMN ${column} TEXT`)
-      }
+    if (!studentIdIndex) {
+      // If studentId is not unique, add a unique constraint
+      await db.exec('CREATE UNIQUE INDEX idx_studentId ON students(studentId)')
     }
   }
 }
@@ -293,16 +267,15 @@ app.whenReady().then(async () => {
       const result = await db.run(
         `
         UPDATE students SET
-          studentId = ?, aadharNo = ?, name = ?, surname = ?, fathersName = ?,
+          aadharNo = ?, name = ?, surname = ?, fathersName = ?,
           mothersName = ?, religion = ?, caste = ?, subCaste = ?, placeOfBirth = ?,
           taluka = ?, district = ?, state = ?, dob = ?, lastAttendedSchool = ?,
           lastSchoolStandard = ?, dateOfAdmission = ?, admissionStandard = ?,
           progress = ?, conduct = ?, dateOfLeaving = ?, currentStandard = ?,
           reasonOfLeaving = ?, remarks = ?
-        WHERE id = ?
+        WHERE studentId = ?
       `,
         [
-          student.studentId,
           student.aadharNo,
           student.name,
           student.surname,
@@ -326,10 +299,10 @@ app.whenReady().then(async () => {
           student.currentStandard,
           student.reasonOfLeaving,
           student.remarks,
-          student.id
+          student.studentId
         ]
       )
-      console.log('Student updated successfully:', student.id)
+      console.log('Student updated successfully:', student.studentId)
       return { success: true }
     } catch (error) {
       console.error('Error updating student:', error)
@@ -337,10 +310,10 @@ app.whenReady().then(async () => {
     }
   })
 
-  ipcMain.handle('delete-student', async (event, id) => {
+  ipcMain.handle('delete-student', async (event, studentId) => {
     try {
-      await db.run('DELETE FROM students WHERE id = ?', id)
-      console.log('Student deleted successfully:', id)
+      await db.run('DELETE FROM students WHERE studentId = ?', studentId)
+      console.log('Student deleted successfully:', studentId)
       return { success: true }
     } catch (error) {
       console.error('Error deleting student:', error)

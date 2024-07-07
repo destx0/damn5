@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react'
 import AdvancedTable from '../components/AdvancedTable'
 import { Button } from '@renderer/components/ui/button'
 import { Input } from '@renderer/components/ui/input'
+import { Search, RefreshCw } from 'lucide-react'
 
 const Home = () => {
   const [rowData, setRowData] = useState([])
@@ -32,21 +33,16 @@ const Home = () => {
       try {
         const result = await window.api.updateStudent(updatedStudent)
         if (result.success) {
-          // Update local state
           setRowData((prevRowData) =>
             prevRowData.map((row) => (row.id === updatedStudent.id ? updatedStudent : row))
           )
         } else {
           console.error('Failed to update student:', result.error)
-          // Revert to original data if update fails
           fetchStudents()
-          // Optionally, add a user-facing error message here
         }
       } catch (error) {
         console.error('Error updating student:', error)
-        // Revert to original data if update fails
         fetchStudents()
-        // Optionally, add a user-facing error message here
       }
     },
     [fetchStudents]
@@ -62,19 +58,28 @@ const Home = () => {
 
   return (
     <div className="h-full flex flex-col p-4">
-      <div className="mb-4 flex items-center space-x-4">
-        <Button onClick={handleRefresh} variant="outline">
-          Refresh Data
+      <div className="mb-6 flex justify-center items-center space-x-4 ">
+        <div className="flex items-center max-w-md w-full">
+          <div className="relative w-full">
+            <Input
+              type="text"
+              placeholder="Quick filter..."
+              value={quickFilterText}
+              onChange={handleQuickFilterChange}
+              className="pl-10 pr-4 py-2 w-full"
+            />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+          </div>
+        </div>
+        <Button onClick={handleRefresh} variant="outline" className="flex items-center space-x-2">
+          <RefreshCw size={18} />
+          <span>Refresh</span>
         </Button>
-        <Input
-          type="text"
-          placeholder="Quick filter..."
-          value={quickFilterText}
-          onChange={handleQuickFilterChange}
-          className="max-w-sm"
-        />
       </div>
-      <div className="flex-grow">
+      <div className="flex-grow px-4">
         <AdvancedTable
           rowData={rowData}
           setRowData={setRowData}

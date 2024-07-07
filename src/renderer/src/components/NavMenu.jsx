@@ -10,6 +10,7 @@ import {
   navigationMenuTriggerStyle
 } from '@/components/ui/navigation-menu'
 import ImportExportCard from '@/components/ImportExportCard'
+import { Home, UserPlus, FileDown } from 'lucide-react'
 
 const NavMenu = () => {
   const location = useLocation()
@@ -22,6 +23,7 @@ const NavMenu = () => {
         <NavigationMenuItem>
           <Link to="/" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()} active={isActive('/')}>
+              <Home className="mr-2 h-4 w-4" />
               Home
             </NavigationMenuLink>
           </Link>
@@ -32,12 +34,16 @@ const NavMenu = () => {
               className={navigationMenuTriggerStyle()}
               active={isActive('/add-student')}
             >
+              <UserPlus className="mr-2 h-4 w-4" />
               Add Student
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Import/Export</NavigationMenuTrigger>
+          <NavigationMenuTrigger>
+            <FileDown className="mr-2 h-4 w-4" />
+            Import/Export
+          </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ImportExportCard />
           </NavigationMenuContent>
