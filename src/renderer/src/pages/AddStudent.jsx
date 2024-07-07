@@ -13,15 +13,15 @@ const iconVariants = {
 }
 
 const buttonVariants = {
-  hidden: { opacity: 0, x: 250 },
-  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.2 } },
+  hidden: { opacity: 0, x: 450 },
+  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.3 } },
   hover: { scale: 1.05, transition: { type: 'spring', stiffness: 300 } },
   tap: { scale: 0.95, transition: { type: 'spring', stiffness: 300 } }
 }
 
 const formVariants = {
-  hidden: { opacity: 0, x: 50 },
-  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.2 } }
+  hidden: { opacity: 0, x: 250 },
+  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.1 } }
 }
 
 const AddStudent = () => {

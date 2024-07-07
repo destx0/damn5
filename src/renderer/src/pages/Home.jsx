@@ -1,5 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import AdvancedTable from '../components/AdvancedTable'
+import { motion } from 'framer-motion'
+
+const easeInVariants = {
+  hidden: { opacity: 0, x: -150 },
+  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.2 } }
+}
 
 const Home = ({ quickFilterText, refreshTrigger }) => {
   const [rowData, setRowData] = useState([])
@@ -45,7 +51,12 @@ const Home = ({ quickFilterText, refreshTrigger }) => {
   )
 
   return (
-    <div className="h-full flex flex-col">
+    <motion.div
+      className="h-full flex flex-col"
+      initial="hidden"
+      animate="visible"
+      variants={easeInVariants}
+    >
       <div className="flex-grow p-4">
         <AdvancedTable
           rowData={rowData}
@@ -54,7 +65,7 @@ const Home = ({ quickFilterText, refreshTrigger }) => {
           quickFilterText={quickFilterText}
         />
       </div>
-    </div>
+    </motion.div>
   )
 }
 

@@ -12,8 +12,8 @@ const container = {
     opacity: 1,
     scale: 1,
     transition: {
-      delayChildren: 0.2,
-      staggerChildren: 0.2
+      delayChildren: 0.1,
+      staggerChildren: 0.1
     }
   }
 }
@@ -26,8 +26,8 @@ const item = {
 const iconVariants = {
   hover: { scale: 1.2 },
   tap: { scale: 0.8 },
-  hidden: { x: -20, opacity: 0 },
-  visible: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300 } }
+  hidden: { opacity: 0, y: -250 },
+  visible: { opacity: 1, y: 0, transition: { ease: 'easeIn', duration: 0.3 } }
 }
 
 const ImportExportCard = () => {
