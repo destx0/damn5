@@ -4,7 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
 import * as XLSX from 'xlsx'
-import { parse } from 'csv-parse/sync' // Corrected import statement
+import { parse } from 'csv-parse/sync'
 import sqlite3 from 'sqlite3'
 import { open } from 'sqlite'
 
@@ -290,7 +290,7 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('update-student', async (event, student) => {
     try {
-      await db.run(
+      const result = await db.run(
         `
         UPDATE students SET
           studentId = ?, aadharNo = ?, name = ?, surname = ?, fathersName = ?,
@@ -329,6 +329,7 @@ app.whenReady().then(async () => {
           student.id
         ]
       )
+      console.log('Student updated successfully:', student.id)
       return { success: true }
     } catch (error) {
       console.error('Error updating student:', error)
@@ -339,6 +340,7 @@ app.whenReady().then(async () => {
   ipcMain.handle('delete-student', async (event, id) => {
     try {
       await db.run('DELETE FROM students WHERE id = ?', id)
+      console.log('Student deleted successfully:', id)
       return { success: true }
     } catch (error) {
       console.error('Error deleting student:', error)

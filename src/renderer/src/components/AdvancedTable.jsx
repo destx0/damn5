@@ -5,19 +5,23 @@ import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { ActionCellRenderer } from './ActionCellRenderer'
 import { columnDefs } from './columnDefs'
 
-const AdvancedTable = ({ rowData }) => {
+const AdvancedTable = ({ rowData, setRowData, onCellValueChanged }) => {
   const [columnDefinitions] = useState(columnDefs)
 
   const defaultColDef = {
     sortable: true,
     resizable: true,
-    width: 120
+    width: 120,
+    editable: true
   }
 
-  const onCellValueChanged = useCallback((event) => {
-    console.log('Cell value changed:', event)
-    // Here you can add logic to update the database
-  }, [])
+  const handleCellValueChanged = useCallback(
+    (event) => {
+      console.log('Cell value changed:', event)
+      onCellValueChanged(event)
+    },
+    [onCellValueChanged]
+  )
 
   return (
     <div className="ag-theme-alpine w-full h-full text-sm">
@@ -25,7 +29,7 @@ const AdvancedTable = ({ rowData }) => {
         rowData={rowData}
         columnDefs={columnDefinitions}
         defaultColDef={defaultColDef}
-        onCellValueChanged={onCellValueChanged}
+        onCellValueChanged={handleCellValueChanged}
         domLayout="normal"
         rowSelection={'multiple'}
         pagination={true}
