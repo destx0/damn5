@@ -20,10 +20,14 @@ const container = {
 
 const item = {
   hidden: { y: 10, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1
-  }
+  visible: { y: 0, opacity: 1 }
+}
+
+const iconVariants = {
+  hover: { scale: 1.2 },
+  tap: { scale: 0.8 },
+  hidden: { x: -20, opacity: 0 },
+  visible: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300 } }
 }
 
 const ImportExportCard = () => {
@@ -125,7 +129,15 @@ const ImportExportCard = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <FileInput className="h-5 w-5" />
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              whileHover="hover"
+              whileTap="tap"
+              variants={iconVariants}
+            >
+              <FileInput className="h-5 w-5" />
+            </motion.div>
             <span>Import/Export</span>
           </CardTitle>
           <CardDescription>Manage your student data</CardDescription>
@@ -141,7 +153,16 @@ const ImportExportCard = () => {
               className="flex items-center justify-center w-full"
               variant="outline"
             >
-              <Upload className="mr-2 h-4 w-4" /> Import CSV/XLSX
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                whileHover="hover"
+                whileTap="tap"
+                variants={iconVariants}
+              >
+                <Upload className="mr-2 h-4 w-4" />
+              </motion.div>
+              Import CSV/XLSX
             </Button>
             <p className="text-xs text-muted-foreground">
               Import student data from a CSV or XLSX file
@@ -160,7 +181,16 @@ const ImportExportCard = () => {
               className="flex items-center justify-center w-full"
               variant="outline"
             >
-              <Download className="mr-2 h-4 w-4" /> Export to XLSX
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                whileHover="hover"
+                whileTap="tap"
+                variants={iconVariants}
+              >
+                <Download className="mr-2 h-4 w-4" />
+              </motion.div>
+              Export to XLSX
             </Button>
             <p className="text-xs text-muted-foreground">Export all student data to an XLSX file</p>
           </motion.div>

@@ -7,6 +7,7 @@ import wavyLinesBg from '@/assets/wavy-lines.svg'
 import { Input } from '@renderer/components/ui/input'
 import { Button } from '@renderer/components/ui/button'
 import { Search, RefreshCw } from 'lucide-react'
+import { motion } from 'framer-motion'
 import classNames from 'classnames'
 
 const Logo = ({ isRotating }) => (
@@ -48,6 +49,7 @@ const App = () => {
   const [quickFilterText, setQuickFilterText] = useState('')
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [isRotating, setIsRotating] = useState(false)
+  const [isSelected, setIsSelected] = useState(false)
 
   const handleQuickFilterChange = useCallback((event) => {
     setQuickFilterText(event.target.value)
@@ -58,6 +60,10 @@ const App = () => {
     setRefreshTrigger((prev) => prev + 1)
     setTimeout(() => setIsRotating(false), 1000) // Rotate for 1 second
   }, [])
+
+  const toggleSelection = () => {
+    setIsSelected(!isSelected)
+  }
 
   return (
     <Router>
@@ -111,6 +117,11 @@ const App = () => {
               />
               <Route path="/add-student" element={<AddStudent />} />
             </Routes>
+            <Button onClick={toggleSelection} className="mt-4">
+              Toggle Selection
+            </Button>
+            {isSelected ? <motion.div layoutId="underline" className="underline" /> : null}
+            {isSelected ? <motion.div layoutId="underline" className="underline" /> : null}
           </div>
         </main>
       </div>
