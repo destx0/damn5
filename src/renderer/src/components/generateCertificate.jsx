@@ -11,42 +11,51 @@ const generateCertificate = async (student) => {
       return date.toLocaleDateString('en-GB') // DD/MM/YYYY format
     }
 
+    // Function to create an input-like field with specified size
+    const createField = (value, size) => {
+      const field = value || ''
+      const padding = '&nbsp;'.repeat(Math.max(0, size - field.length))
+      return `<span style="border-bottom: 1px solid black;">${field}${padding}</span>`
+    }
+
     // Create certificate HTML content with student data
     const certificateHTML = `
-      <div id="certificate" style="width: 210mm; height: 297mm; padding: 20mm; box-sizing: border-box; background-color: white; font-family: Arial, sans-serif; border: 2px solid black; font-size: 12pt;">
-        <h2 style="text-align: center; margin-bottom: 10px;">Jaggannath Shikshan Prasarak Mandal's</h2>
-        <h1 style="text-align: center; margin-bottom: 5px;">Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h1>
-        <h3 style="text-align: center; margin-bottom: 10px;">Taluka- Yawal, Dist. Jalgaon</h3>
-        <p style="text-align: center; margin-bottom: 5px;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
+      <div id="certificate" style="width: 210mm; height: 297mm; padding: 20mm 12mm; box-sizing: border-box; background-color: white; font-family: 'Times New Roman', Times, serif; border: 2px solid black; font-size: 13pt; position: relative; font-weight: 500;">
+        <div style="position: absolute; top: 10mm; left: 10mm; right: 10mm; bottom: 10mm; border: 2px solid black;"></div>
+        <h3 style="text-align: center;">Jaggannath Shikshan Prasarak Mandal's</h3>
+        <h2 style="text-align: center; font-size: 23px;">Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h2>
+        <h3 style="text-align: center;">Taluka- Yawal, Dist. Jalgaon</h3>
+        <p style="text-align: center; font-weight: normal;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
           <span>Sr. No. 78</span>
           <span>G. Register No.</span>
         </div>
-        <p style="margin-bottom: 5px;">School Reg. No.- Edu. Depu.Dir/Sec-2/First Appru/90-91/92/Div.Sec.Depu.Dir.Nashik/Datted 12-3-92</p>
+        <pre style="font-family: inherit; font-size: inherit; margin: 0; white-space: pre-wrap; word-wrap: break-word;">School Reg. No.- Edu. Depu.Dir/Sec-2/First Appru/90-91/92/Div.Sec.Depu.Dir.Nashik/Datted 12-3-92</pre>
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
           <span>U Dise No.- 27031508414</span>
           <span>Board- Nashik</span>
           <span>Index No.- 15.15.005</span>
         </div>
         <h2 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">Leaving Certificate</h2>
-        <div style="line-height: 1.6; padding: 10px 0;">
-          Student ID.: ${student.studentId} U.I.D. No. (Aadhar Card No.): ${student.aadharNo}<br>
-          Name of the student in full (Name): ${student.name} (Father's Name): ${student.fathersName}<br>
-          (Surname): ${student.surname}<br>
-          Mother's Name: ${student.mothersName}<br>
-          Nationality: Indian Mother tongue: ${student.motherTongue || '______________________'}<br>
-          Religion: ${student.religion} Caste: ${student.caste} Sub-caste: ${student.subCaste}<br>
-          Place of Birth: ${student.placeOfBirth} Taluka: ${student.taluka} Dist: ${student.district} State: ${student.state} Country: India<br>
-          Date of Birth (DD/MM/YY): ${formatDate(student.dateOfBirth)}<br>
-          Date of Birth (In words): ${student.dateOfBirthInWords || '______________________'}<br>
-          Last school attended & standard: ${student.lastAttendedSchool} - ${student.lastSchoolStandard}<br>
-          Date of admission in this school: ${formatDate(student.dateOfAdmission)} Standard: ${student.admissionStandard}<br>
-          Progress: ${student.progress} Conduct: ${student.conduct}<br>
-          Date of leaving school: ${formatDate(student.dateOfLeaving)}<br>
-          Standard in which studying and since when (in words and figure): ${student.currentStandard}<br>
-          Reason of leaving school: ${student.reasonOfLeaving}<br>
-          Remarks: ${student.remarks}
-        </div>
+        <pre style="line-height: 1.6; padding: 10px 0; font-family: inherit; font-size: inherit; margin: 0; white-space: pre-wrap; word-wrap: break-word;">
+Student ID.: ${createField(student.studentId, 25)} U.I.D. No. (Aadhar Card No.): ${createField(student.aadharNo, 15)}
+Name of the student in full (Name): ${createField(student.name, 12)} (Father's Name): ${createField(student.fathersName, 12)}
+(Surname): ${createField(student.surname, 20)}
+Mother's Name: ${createField(student.mothersName, 30)}
+Nationality: ${createField(student.nationality || 'Indian', 15)} Mother tongue: ${createField(student.motherTongue, 29)}
+Religion: ${createField(student.religion, 10)} Caste: ${createField(student.caste, 15)} Sub-caste: ${createField(student.subCaste, 15)}
+Place of Birth: ${createField(student.placeOfBirth, 20)} Taluka: ${createField(student.taluka, 25)} Dist: ${createField(student.district, 25)} State: ${createField(student.state, 20)} Country: India
+Date of Birth (DD/MM/YY): according to the Christian era ${createField(formatDate(student.dateOfBirth), 20)}
+Date of Birth (In words): ${createField(student.dateOfBirthInWords, 50)}
+Last school attended & standard: ${createField(student.lastAttendedSchool, 45)}
+                                 ${createField(student.lastSchoolStandard, 45)}
+Date of admission in this school: ${createField(formatDate(student.dateOfAdmission), 10)} Standard: ${createField(student.admissionStandard, 20)}
+Progress: ${createField(student.progress, 25)} Conduct: ${createField(student.conduct, 25)}
+Date of leaving school: ${createField(formatDate(student.dateOfLeaving), 10)}
+Standard in which studying and since when (in words and figure): ${createField(student.currentStandard, 30)}
+Reason of leaving school: ${createField(student.reasonOfLeaving, 30)}
+Remarks: ${createField(student.remarks, 50)}
+        </pre>
         <p style="margin-top: 20px;">Certified that the above information is in accordance with the School Register.</p>
         <div style="display: flex; justify-content: space-between; margin-top: 40px;">
           <div>Date: ${new Date().getDate()}</div>
@@ -58,8 +67,8 @@ const generateCertificate = async (student) => {
           <div>Clerk</div>
           <div>Head Master<br>(Seal)</div>
         </div>
-        <p style="font-size: 10pt; margin-top: 20px;">* No change in any entry in this certificate shall be made except by the authority issuing it.</p>
-        <p style="font-size: 10pt;">* Any infringement of the rule is liable to be dealt with by rustication or by other suitable punishment.</p>
+        <pre style="font-size: 10pt; margin-top: 20px;">* No change in any entry in this certificate shall be made except by the authority issuing it.
+* Any infringement of the rule is liable to be dealt with by rustication or by other suitable punishment.</pre>
       </div>
     `
 
@@ -87,7 +96,7 @@ const generateCertificate = async (student) => {
     })
 
     pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297)
-    pdf.save(`${student.name}_${student.surname}_leaving_certificate.pdf`)
+    pdf.save(`${student.name || 'Unnamed'}_${student.surname || 'Student'}_leaving_certificate.pdf`)
 
     // Remove the temporary div
     document.body.removeChild(certificateContainer)
