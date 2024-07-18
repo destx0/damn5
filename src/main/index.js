@@ -18,64 +18,68 @@ async function initializeDatabase() {
     driver: sqlite3.Database
   })
 
-  const tableInfo = await db.all("PRAGMA table_info('students')")
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS students (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      studentId TEXT UNIQUE,
+      aadharNo TEXT,
+      name TEXT,
+      surname TEXT,
+      fathersName TEXT,
+      mothersName TEXT,
+      religion TEXT,
+      caste TEXT,
+      subCaste TEXT,
+      placeOfBirth TEXT,
+      taluka TEXT,
+      district TEXT,
+      state TEXT,
+      dateOfBirth TEXT,
+      lastAttendedSchool TEXT,
+      lastSchoolStandard TEXT,
+      dateOfAdmission TEXT,
+      admissionStandard TEXT,
+      progress TEXT,
+      conduct TEXT,
+      dateOfLeaving TEXT,
+      currentStandard TEXT,
+      reasonOfLeaving TEXT,
+      remarks TEXT,
+      motherTongue TEXT,
+      ten TEXT,
+      grn TEXT,
+      certGenCount INTEGER DEFAULT 0
+    )
+  `)
 
-  if (tableInfo.length === 0) {
-    await db.exec(`
-      CREATE TABLE students (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        studentId TEXT UNIQUE,
-        aadharNo TEXT,
-        name TEXT,
-        surname TEXT,
-        fathersName TEXT,
-        mothersName TEXT,
-        religion TEXT,
-        caste TEXT,
-        subCaste TEXT,
-        placeOfBirth TEXT,
-        taluka TEXT,
-        district TEXT,
-        state TEXT,
-        dateOfBirth TEXT,
-        lastAttendedSchool TEXT,
-        lastSchoolStandard TEXT,
-        dateOfAdmission TEXT,
-        admissionStandard TEXT,
-        progress TEXT,
-        conduct TEXT,
-        dateOfLeaving TEXT,
-        currentStandard TEXT,
-        reasonOfLeaving TEXT,
-        remarks TEXT,
-        motherTongue TEXT,
-        ten TEXT,
-        grn TEXT,
-        certGenCount INTEGER DEFAULT 0
-      )
-    `)
-  } else {
-    // Check if new columns exist, if not, add them
-    const columns = tableInfo.map((col) => col.name)
-    if (!columns.includes('motherTongue')) {
-      await db.exec('ALTER TABLE students ADD COLUMN motherTongue TEXT')
-    }
-    if (!columns.includes('ten')) {
-      await db.exec('ALTER TABLE students ADD COLUMN ten TEXT')
-    }
-    if (!columns.includes('grn')) {
-      await db.exec('ALTER TABLE students ADD COLUMN grn TEXT')
-    }
-    if (!columns.includes('certGenCount')) {
-      await db.exec('ALTER TABLE students ADD COLUMN certGenCount INTEGER DEFAULT 0')
-    }
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS certificates (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      serialNumber INTEGER UNIQUE,
+      studentId TEXT,
+      generatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (studentId) REFERENCES students(studentId)
+    )
+  `)
 
-    const indexInfo = await db.all("PRAGMA index_list('students')")
-    const studentIdIndex = indexInfo.find((index) => index.name === 'idx_studentId')
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS certificate_counter (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      lastSerialNumber INTEGER DEFAULT 0
+    )
+  `)
 
-    if (!studentIdIndex) {
-      await db.exec('CREATE UNIQUE INDEX idx_studentId ON students(studentId)')
-    }
+  // Initialize certificate counter if not exists
+  const counterExists = await db.get('SELECT * FROM certificate_counter WHERE id = 1')
+  if (!counterExists) {
+    await db.run('INSERT INTO certificate_counter (id, lastSerialNumber) VALUES (1, 0)')
+  }
+
+  const indexInfo = await db.all("PRAGMA index_list('students')")
+  const studentIdIndex = indexInfo.find((index) => index.name === 'idx_studentId')
+
+  if (!studentIdIndex) {
+    await db.exec('CREATE UNIQUE INDEX idx_studentId ON students(studentId)')
   }
 }
 
@@ -289,10 +293,12 @@ app.whenReady().then(async () => {
       return { success: false, error: error.message }
     }
   })
-  // Add this handler in your main process file
+
   ipcMain.handle('generate-certificate', async (event, studentId) => {
     try {
-      // First, get the current student data
+      await db.run('BEGIN TRANSACTION')
+
+      // Get the current student data
       const [student] = await db.all('SELECT * FROM students WHERE studentId = ?', studentId)
 
       if (!student) {
@@ -308,17 +314,37 @@ app.whenReady().then(async () => {
         studentId
       ])
 
+      // Get the next serial number
+      const { lastSerialNumber } = await db.get('SELECT lastSerialNumber FROM certificate_counter WHERE id = 1')
+      const newSerialNumber = lastSerialNumber + 1
+
+      // Update the certificate counter
+      await db.run('UPDATE certificate_counter SET lastSerialNumber = ? WHERE id = 1', newSerialNumber)
+
+      // Insert a new certificate record
+      await db.run('INSERT INTO certificates (serialNumber, studentId) VALUES (?, ?)', [
+        newSerialNumber,
+        studentId
+      ])
+
+      await db.run('COMMIT')
+
       // Here, you would typically generate the certificate
-      // For this example, we'll just return the updated student data
+      // For this example, we'll just return the updated student data and the new serial number
       const [updatedStudent] = await db.all('SELECT * FROM students WHERE studentId = ?', studentId)
 
-      return { success: true, data: updatedStudent }
+      return {
+        success: true,
+        data: updatedStudent,
+        serialNumber: newSerialNumber
+      }
     } catch (error) {
+      await db.run('ROLLBACK')
       console.error('Error generating certificate:', error)
       return { success: false, error: error.message }
     }
   })
-  
+
   ipcMain.handle('update-student', async (event, student) => {
     try {
       const result = await db.run(
