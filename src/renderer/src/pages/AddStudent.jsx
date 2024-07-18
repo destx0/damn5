@@ -10,6 +10,13 @@ import { UserPlus } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import Datepicker from 'react-tailwindcss-datepicker'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { initialFormData } from './formData'
 import {
   iconVariants,
@@ -21,6 +28,12 @@ import { formatLabel } from './utils'
 
 const AddStudent = () => {
   const [formData, setFormData] = useState(initialFormData)
+  const [customInputs, setCustomInputs] = useState({
+    progress: false,
+    conduct: false,
+    remarks: false,
+    reasonOfLeaving: false
+  })
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -28,6 +41,16 @@ const AddStudent = () => {
       ...prevData,
       [name]: value
     }))
+  }
+
+  const handleSelectChange = (name, value) => {
+    if (value === 'custom') {
+      setCustomInputs((prev) => ({ ...prev, [name]: true }))
+      setFormData((prevData) => ({ ...prevData, [name]: '' }))
+    } else {
+      setCustomInputs((prev) => ({ ...prev, [name]: false }))
+      setFormData((prevData) => ({ ...prevData, [name]: value }))
+    }
   }
 
   const handleDateChange = (name, dateValue) => {
@@ -44,6 +67,12 @@ const AddStudent = () => {
       if (result.success) {
         toast.success('Student added successfully!')
         setFormData(initialFormData)
+        setCustomInputs({
+          progress: false,
+          conduct: false,
+          remarks: false,
+          reasonOfLeaving: false
+        })
       } else {
         toast.error('Failed to add student. Please try again.')
       }
@@ -67,6 +96,46 @@ const AddStudent = () => {
         />
       )
     }
+
+    if (['progress', 'conduct', 'remarks', 'reasonOfLeaving'].includes(field)) {
+      const options = {
+        progress: ['Excellent', 'Good', 'Average', 'Needs Improvement'],
+        conduct: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement'],
+        remarks: ['Outstanding', 'Satisfactory', 'Needs Attention'],
+        reasonOfLeaving: ['Completed Studies', 'Transfer', 'Personal Reasons', 'Other']
+      }
+
+      return (
+        <div className="flex flex-col space-y-2">
+          <Select
+            onValueChange={(value) => handleSelectChange(field, value)}
+            value={customInputs[field] ? 'custom' : formData[field]}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={`Select ${formatLabel(field)}`} />
+            </SelectTrigger>
+            <SelectContent>
+              {options[field].map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+              <SelectItem value="custom">Custom</SelectItem>
+            </SelectContent>
+          </Select>
+          {customInputs[field] && (
+            <Input
+              type="text"
+              name={field}
+              value={formData[field]}
+              onChange={handleChange}
+              placeholder={`Enter custom ${formatLabel(field)}`}
+            />
+          )}
+        </div>
+      )
+    }
+
     return (
       <Input
         type={field === 'certGenCount' ? 'number' : 'text'}
@@ -88,7 +157,8 @@ const AddStudent = () => {
           <motion.div variants={formItemVariants} initial="hidden" animate="visible">
             <CardTitle>Add Student</CardTitle>
             <CardDescription>
-              Enter the student's details below. Use the date picker for date fields.
+              Enter the student's details below. Use the date picker for date fields and select
+              options where available.
             </CardDescription>
           </motion.div>
         </CardHeader>
