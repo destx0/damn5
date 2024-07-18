@@ -9,66 +9,17 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { UserPlus } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
-
-const iconVariants = {
-  hover: { scale: 1.2, transition: { type: 'spring', stiffness: 300 } },
-  tap: { scale: 0.8, transition: { type: 'spring', stiffness: 300 } }
-}
-
-const buttonVariants = {
-  hidden: { opacity: 1, x: 450, scale: 0.01 },
-  visible: { opacity: 1, x: 0, scale: 1, transition: { ease: 'easeIn', duration: 0.3 } },
-  hover: { scale: 1.05, transition: { type: 'spring', stiffness: 300 } },
-  tap: { scale: 0.95, transition: { type: 'spring', stiffness: 300 } }
-}
-
-const formContainerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      delayChildren: 0.01,
-      staggerChildren: 0.01
-    }
-  }
-}
-
-const formItemVariants = {
-  hidden: { opacity: 0, x: 250 },
-  visible: { opacity: 1, x: 0, transition: { ease: 'easeIn', duration: 0.1 } }
-}
+import { initialFormData } from './formData'
+import {
+  iconVariants,
+  buttonVariants,
+  formContainerVariants,
+  formItemVariants
+} from './animationVariants'
+import { formatLabel } from './utils'
 
 const AddStudent = () => {
-  const [formData, setFormData] = useState({
-    studentId: '',
-    aadharNo: '',
-    name: '',
-    surname: '',
-    fathersName: '',
-    mothersName: '',
-    religion: '',
-    caste: '',
-    subCaste: '',
-    placeOfBirth: '',
-    taluka: '',
-    district: '',
-    state: '',
-    dateOfBirth: '',
-    lastAttendedSchool: '',
-    lastSchoolStandard: '',
-    dateOfAdmission: '',
-    admissionStandard: '',
-    progress: '',
-    conduct: '',
-    dateOfLeaving: '',
-    currentStandard: '',
-    reasonOfLeaving: '',
-    remarks: '',
-    motherTongue: '',
-    ten: '',
-    grn: '',
-    certGenCount: '0'
-  })
+  const [formData, setFormData] = useState(initialFormData)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -84,36 +35,7 @@ const AddStudent = () => {
       const result = await window.api.addStudent(formData)
       if (result.success) {
         toast.success('Student added successfully!')
-        setFormData({
-          studentId: '',
-          aadharNo: '',
-          name: '',
-          surname: '',
-          fathersName: '',
-          mothersName: '',
-          religion: '',
-          caste: '',
-          subCaste: '',
-          placeOfBirth: '',
-          taluka: '',
-          district: '',
-          state: '',
-          dateOfBirth: '',
-          lastAttendedSchool: '',
-          lastSchoolStandard: '',
-          dateOfAdmission: '',
-          admissionStandard: '',
-          progress: '',
-          conduct: '',
-          dateOfLeaving: '',
-          currentStandard: '',
-          reasonOfLeaving: '',
-          remarks: '',
-          motherTongue: '',
-          ten: '',
-          grn: '',
-          certGenCount: '0'
-        }) // Reset form
+        setFormData(initialFormData) // Reset form
       } else {
         toast.error('Failed to add student. Please try again.')
       }
@@ -121,10 +43,6 @@ const AddStudent = () => {
       console.error('Error adding student:', error)
       toast.error(`Failed to add student: ${error.message}`)
     }
-  }
-
-  const formatLabel = (field) => {
-    return field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')
   }
 
   return (
