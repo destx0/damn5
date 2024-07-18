@@ -1,3 +1,5 @@
+// src/renderer/src/components/columnDefs.js
+
 import { ActionCellRenderer } from './ActionCellRenderer'
 
 export const columnDefs = [
@@ -175,6 +177,34 @@ export const columnDefs = [
     field: 'remarks',
     headerName: 'Remarks',
     filter: 'agTextColumnFilter',
+    floatingFilter: true,
+    editable: true
+  },
+  {
+    field: 'motherTongue',
+    headerName: 'Mother Tongue',
+    filter: 'agTextColumnFilter',
+    floatingFilter: true,
+    editable: true
+  },
+  {
+    field: 'ten',
+    headerName: 'TEN',
+    filter: 'agTextColumnFilter',
+    floatingFilter: true,
+    editable: true
+  },
+  {
+    field: 'grn',
+    headerName: 'GRN',
+    filter: 'agTextColumnFilter',
+    floatingFilter: true,
+    editable: true
+  },
+  {
+    field: 'certGenCount',
+    headerName: 'Cert Gen Count',
+    filter: 'agNumberColumnFilter',
     floatingFilter: true,
     editable: true
   }
