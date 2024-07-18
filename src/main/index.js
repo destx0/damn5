@@ -1,3 +1,5 @@
+// src/main/index.js
+
 import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
@@ -45,10 +47,29 @@ async function initializeDatabase() {
         dateOfLeaving TEXT,
         currentStandard TEXT,
         reasonOfLeaving TEXT,
-        remarks TEXT
+        remarks TEXT,
+        motherTongue TEXT,
+        ten TEXT,
+        grn TEXT,
+        certGenCount INTEGER DEFAULT 0
       )
     `)
   } else {
+    // Check if new columns exist, if not, add them
+    const columns = tableInfo.map((col) => col.name)
+    if (!columns.includes('motherTongue')) {
+      await db.exec('ALTER TABLE students ADD COLUMN motherTongue TEXT')
+    }
+    if (!columns.includes('ten')) {
+      await db.exec('ALTER TABLE students ADD COLUMN ten TEXT')
+    }
+    if (!columns.includes('grn')) {
+      await db.exec('ALTER TABLE students ADD COLUMN grn TEXT')
+    }
+    if (!columns.includes('certGenCount')) {
+      await db.exec('ALTER TABLE students ADD COLUMN certGenCount INTEGER DEFAULT 0')
+    }
+
     const indexInfo = await db.all("PRAGMA index_list('students')")
     const studentIdIndex = indexInfo.find((index) => index.name === 'idx_studentId')
 
@@ -164,8 +185,8 @@ app.whenReady().then(async () => {
             religion, caste, subCaste, placeOfBirth, taluka, district, state,
             dateOfBirth, lastAttendedSchool, lastSchoolStandard, dateOfAdmission,
             admissionStandard, progress, conduct, dateOfLeaving, currentStandard,
-            reasonOfLeaving, remarks
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            reasonOfLeaving, remarks, motherTongue, ten, grn, certGenCount
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
           [
             item.studentId,
@@ -191,7 +212,11 @@ app.whenReady().then(async () => {
             dateOfLeaving ? dateOfLeaving.toISOString().split('T')[0] : null,
             item.currentStandard,
             item.reasonOfLeaving,
-            item.remarks
+            item.remarks,
+            item.motherTongue,
+            item.ten,
+            item.grn,
+            item.certGenCount || 0
           ]
         )
       }
@@ -225,8 +250,8 @@ app.whenReady().then(async () => {
           religion, caste, subCaste, placeOfBirth, taluka, district, state,
           dateOfBirth, lastAttendedSchool, lastSchoolStandard, dateOfAdmission,
           admissionStandard, progress, conduct, dateOfLeaving, currentStandard,
-          reasonOfLeaving, remarks
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          reasonOfLeaving, remarks, motherTongue, ten, grn, certGenCount
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
         [
           student.studentId,
@@ -252,7 +277,11 @@ app.whenReady().then(async () => {
           student.dateOfLeaving,
           student.currentStandard,
           student.reasonOfLeaving,
-          student.remarks
+          student.remarks,
+          student.motherTongue,
+          student.ten,
+          student.grn,
+          student.certGenCount
         ]
       )
       return { success: true, id: result.lastID }
@@ -271,7 +300,8 @@ app.whenReady().then(async () => {
           taluka = ?, district = ?, state = ?, dateOfBirth = ?, lastAttendedSchool = ?,
           lastSchoolStandard = ?, dateOfAdmission = ?, admissionStandard = ?,
           progress = ?, conduct = ?, dateOfLeaving = ?, currentStandard = ?,
-          reasonOfLeaving = ?, remarks = ?
+          reasonOfLeaving = ?, remarks = ?, motherTongue = ?, ten = ?, grn = ?,
+          certGenCount = ?
         WHERE studentId = ?
       `,
         [
@@ -298,6 +328,10 @@ app.whenReady().then(async () => {
           student.currentStandard,
           student.reasonOfLeaving,
           student.remarks,
+          student.motherTongue,
+          student.ten,
+          student.grn,
+          student.certGenCount,
           student.studentId
         ]
       )
