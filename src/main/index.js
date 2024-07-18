@@ -289,7 +289,36 @@ app.whenReady().then(async () => {
       return { success: false, error: error.message }
     }
   })
+  // Add this handler in your main process file
+  ipcMain.handle('generate-certificate', async (event, studentId) => {
+    try {
+      // First, get the current student data
+      const [student] = await db.all('SELECT * FROM students WHERE studentId = ?', studentId)
 
+      if (!student) {
+        throw new Error('Student not found')
+      }
+
+      // Increment the certGenCount
+      const newCertGenCount = (student.certGenCount || 0) + 1
+
+      // Update the student record with the new certGenCount
+      await db.run('UPDATE students SET certGenCount = ? WHERE studentId = ?', [
+        newCertGenCount,
+        studentId
+      ])
+
+      // Here, you would typically generate the certificate
+      // For this example, we'll just return the updated student data
+      const [updatedStudent] = await db.all('SELECT * FROM students WHERE studentId = ?', studentId)
+
+      return { success: true, data: updatedStudent }
+    } catch (error) {
+      console.error('Error generating certificate:', error)
+      return { success: false, error: error.message }
+    }
+  })
+  
   ipcMain.handle('update-student', async (event, student) => {
     try {
       const result = await db.run(

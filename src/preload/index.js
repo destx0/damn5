@@ -9,7 +9,8 @@ const api = {
   getStudents: () => ipcRenderer.invoke('get-students'),
   addStudent: (student) => ipcRenderer.invoke('add-student', student),
   updateStudent: (student) => ipcRenderer.invoke('update-student', student),
-  deleteStudent: (studentId) => ipcRenderer.invoke('delete-student', studentId)
+  deleteStudent: (studentId) => ipcRenderer.invoke('delete-student', studentId),
+  generateCertificate: (studentId) => ipcRenderer.invoke('generate-certificate', studentId)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
