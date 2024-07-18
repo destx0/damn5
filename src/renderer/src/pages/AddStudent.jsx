@@ -1,12 +1,10 @@
-// src/renderer/src/pages/AddStudent.jsx
-
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { UserPlus, UserCheck } from 'lucide-react'
+import { UserPlus, UserCheck, FileText } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import Datepicker from 'react-tailwindcss-datepicker'
@@ -26,6 +24,7 @@ import {
 } from './animationVariants'
 import { formatLabel } from './utils'
 import { useLocation, useNavigate } from 'react-router-dom'
+import generateCertificate from '@/components/generateCertificate'
 
 const AddStudent = () => {
   const [formData, setFormData] = useState(initialFormData)
@@ -36,6 +35,7 @@ const AddStudent = () => {
     reasonOfLeaving: false
   })
   const [isEditMode, setIsEditMode] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -74,6 +74,7 @@ const AddStudent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setIsLoading(true)
     try {
       let result
       if (isEditMode) {
@@ -83,22 +84,116 @@ const AddStudent = () => {
       }
       if (result.success) {
         toast.success(isEditMode ? 'Student updated successfully!' : 'Student added successfully!')
-        navigate('/') // Navigate back to the main page
+        navigate('/')
       } else {
-        toast.error(
-          isEditMode
-            ? 'Failed to update student. Please try again.'
-            : 'Failed to add student. Please try again.'
-        )
+        throw new Error(result.error || 'An unknown error occurred')
       }
     } catch (error) {
       console.error('Error adding/updating student:', error)
       toast.error(`Failed to ${isEditMode ? 'update' : 'add'} student: ${error.message}`)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleAddAndGenerateCertificate = async (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      const result = await window.api.addStudent(formData)
+      if (result.success && result.id) {
+        toast.success('Student added successfully!')
+        const updatedStudent = { ...formData, id: result.id }
+        await generateCertificate(updatedStudent)
+        toast.success('Certificate generated successfully!')
+        navigate('/')
+      } else {
+        throw new Error(result.error || 'Failed to add student')
+      }
+    } catch (error) {
+      console.error('Error adding student or generating certificate:', error)
+      toast.error(`Failed to add student or generate certificate: ${error.message}`)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleUpdateAndGenerateCertificate = async (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      const result = await window.api.updateStudent(formData)
+      if (result.success) {
+        toast.success('Student updated successfully!')
+        await generateCertificate(formData)
+        toast.success('Certificate generated successfully!')
+        navigate('/')
+      } else {
+        throw new Error(result.error || 'Failed to update student')
+      }
+    } catch (error) {
+      console.error('Error updating student or generating certificate:', error)
+      toast.error(`Failed to update student or generate certificate: ${error.message}`)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const renderButtons = () => {
+    if (isEditMode) {
+      return (
+        <div className="flex space-x-4">
+          <Button
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-2"
+          >
+            <motion.div variants={iconVariants}>
+              <UserCheck className="mr-2 h-4 w-4" />
+            </motion.div>
+            <span>{isLoading ? 'Updating...' : 'Update Student'}</span>
+          </Button>
+          <Button
+            onClick={handleUpdateAndGenerateCertificate}
+            disabled={isLoading}
+            className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-2"
+          >
+            <motion.div variants={iconVariants}>
+              <FileText className="mr-2 h-4 w-4" />
+            </motion.div>
+            <span>{isLoading ? 'Processing...' : 'Update and Generate Certificate'}</span>
+          </Button>
+        </div>
+      )
+    } else {
+      return (
+        <div className="flex space-x-4">
+          <Button
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-2"
+          >
+            <motion.div variants={iconVariants}>
+              <UserPlus className="mr-2 h-4 w-4" />
+            </motion.div>
+            <span>{isLoading ? 'Adding...' : 'Add Student'}</span>
+          </Button>
+          <Button
+            onClick={handleAddAndGenerateCertificate}
+            disabled={isLoading}
+            className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-2"
+          >
+            <motion.div variants={iconVariants}>
+              <FileText className="mr-2 h-4 w-4" />
+            </motion.div>
+            <span>{isLoading ? 'Processing...' : 'Add and Generate Certificate'}</span>
+          </Button>
+        </div>
+      )
     }
   }
 
   const renderField = (field) => {
-    // Skip rendering the 'id' field
     if (field === 'id') return null
 
     if (['dateOfBirth', 'dateOfAdmission', 'dateOfLeaving'].includes(field)) {
@@ -210,19 +305,7 @@ const AddStudent = () => {
             whileHover="hover"
             whileTap="tap"
           >
-            <Button
-              onClick={handleSubmit}
-              className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-2"
-            >
-              <motion.div variants={iconVariants}>
-                {isEditMode ? (
-                  <UserCheck className="mr-2 h-4 w-4" />
-                ) : (
-                  <UserPlus className="mr-2 h-4 w-4" />
-                )}
-              </motion.div>
-              <span>{isEditMode ? 'Update Student' : 'Add Student'}</span>
-            </Button>
+            {renderButtons()}
           </motion.div>
         </div>
       </Card>
