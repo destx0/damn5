@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { UserPlus } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
+import Datepicker from 'react-tailwindcss-datepicker'
 import { initialFormData } from './formData'
 import {
   iconVariants,
@@ -29,13 +30,20 @@ const AddStudent = () => {
     }))
   }
 
+  const handleDateChange = (name, dateValue) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: dateValue.startDate
+    }))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       const result = await window.api.addStudent(formData)
       if (result.success) {
         toast.success('Student added successfully!')
-        setFormData(initialFormData) // Reset form
+        setFormData(initialFormData)
       } else {
         toast.error('Failed to add student. Please try again.')
       }
@@ -45,6 +53,34 @@ const AddStudent = () => {
     }
   }
 
+  const renderField = (field) => {
+    if (['dateOfBirth', 'dateOfAdmission', 'dateOfLeaving'].includes(field)) {
+      return (
+        <Datepicker
+          asSingle={true}
+          useRange={false}
+          value={{ startDate: formData[field], endDate: formData[field] }}
+          onChange={(value) => handleDateChange(field, value)}
+          displayFormat="YYYY-MM-DD"
+          placeholder={`Select ${formatLabel(field)}`}
+          inputClassName="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        />
+      )
+    }
+    return (
+      <Input
+        type={field === 'certGenCount' ? 'number' : 'text'}
+        id={field}
+        name={field}
+        value={formData[field]}
+        onChange={handleChange}
+        placeholder={formatLabel(field)}
+        required
+        min={field === 'certGenCount' ? '0' : undefined}
+      />
+    )
+  }
+
   return (
     <div className="container mx-auto p-4 h-full">
       <Card className="h-full flex flex-col relative overflow-hidden">
@@ -52,7 +88,7 @@ const AddStudent = () => {
           <motion.div variants={formItemVariants} initial="hidden" animate="visible">
             <CardTitle>Add Student</CardTitle>
             <CardDescription>
-              Enter the student's details below. Use YYYY-MM-DD format for dates.
+              Enter the student's details below. Use the date picker for date fields.
             </CardDescription>
           </motion.div>
         </CardHeader>
@@ -68,18 +104,7 @@ const AddStudent = () => {
               {Object.keys(formData).map((field) => (
                 <motion.div key={field} className="space-y-2" variants={formItemVariants}>
                   <Label htmlFor={field}>{formatLabel(field)}</Label>
-                  <Input
-                    type={field === 'certGenCount' ? 'number' : 'text'}
-                    id={field}
-                    name={field}
-                    value={formData[field]}
-                    onChange={handleChange}
-                    placeholder={field.includes('date') ? 'YYYY-MM-DD' : formatLabel(field)}
-                    required
-                    pattern={field.includes('date') ? '\\d{4}-\\d{2}-\\d{2}' : undefined}
-                    title={field.includes('date') ? 'Enter date in YYYY-MM-DD format' : undefined}
-                    min={field === 'certGenCount' ? '0' : undefined}
-                  />
+                  {renderField(field)}
                 </motion.div>
               ))}
             </motion.form>

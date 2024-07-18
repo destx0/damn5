@@ -69,6 +69,7 @@
     "react-hook-form": "^7.52.1",
     "react-resizable-panels": "^2.0.20",
     "react-router-dom": "^6.24.1",
+    "react-tailwindcss-datepicker": "^1.6.6",
     "recharts": "^2.12.7",
     "sonner": "^1.5.0",
     "sqlite": "^5.1.1",
