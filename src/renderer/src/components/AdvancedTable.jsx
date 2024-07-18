@@ -1,26 +1,15 @@
 // src/renderer/src/components/AdvancedTable.js
-import React, { useState, useCallback, useMemo } from 'react'
+
+import React, { useState, useCallback } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 import 'ag-grid-community/styles/ag-theme-quartz.css'
-
 import '@/assets/ag.css'
-import { columnDefs } from './columnDefs'
+import { columnDefs, defaultColDef } from './columnDefs'
 
 const AdvancedTable = ({ rowData, setRowData, onCellValueChanged, quickFilterText }) => {
   const [columnDefinitions] = useState(columnDefs)
-
-  const defaultColDef = useMemo(
-    () => ({
-      sortable: true,
-      resizable: true,
-      width: 120,
-      editable: true,
-      filter: true
-    }),
-    []
-  )
 
   const handleCellValueChanged = useCallback(
     (event) => {
