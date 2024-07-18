@@ -1,12 +1,12 @@
 // src/renderer/src/pages/AddStudent.jsx
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { UserPlus } from 'lucide-react'
+import { UserPlus, UserCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import Datepicker from 'react-tailwindcss-datepicker'
@@ -25,6 +25,7 @@ import {
   formItemVariants
 } from './animationVariants'
 import { formatLabel } from './utils'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const AddStudent = () => {
   const [formData, setFormData] = useState(initialFormData)
@@ -34,6 +35,17 @@ const AddStudent = () => {
     remarks: false,
     reasonOfLeaving: false
   })
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (location.state && location.state.studentData) {
+      setFormData(location.state.studentData)
+      setIsEditMode(true)
+    }
+  }, [location])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -63,26 +75,32 @@ const AddStudent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const result = await window.api.addStudent(formData)
-      if (result.success) {
-        toast.success('Student added successfully!')
-        setFormData(initialFormData)
-        setCustomInputs({
-          progress: false,
-          conduct: false,
-          remarks: false,
-          reasonOfLeaving: false
-        })
+      let result
+      if (isEditMode) {
+        result = await window.api.updateStudent(formData)
       } else {
-        toast.error('Failed to add student. Please try again.')
+        result = await window.api.addStudent(formData)
+      }
+      if (result.success) {
+        toast.success(isEditMode ? 'Student updated successfully!' : 'Student added successfully!')
+        navigate('/') // Navigate back to the main page
+      } else {
+        toast.error(
+          isEditMode
+            ? 'Failed to update student. Please try again.'
+            : 'Failed to add student. Please try again.'
+        )
       }
     } catch (error) {
-      console.error('Error adding student:', error)
-      toast.error(`Failed to add student: ${error.message}`)
+      console.error('Error adding/updating student:', error)
+      toast.error(`Failed to ${isEditMode ? 'update' : 'add'} student: ${error.message}`)
     }
   }
 
   const renderField = (field) => {
+    // Skip rendering the 'id' field
+    if (field === 'id') return null
+
     if (['dateOfBirth', 'dateOfAdmission', 'dateOfLeaving'].includes(field)) {
       return (
         <Datepicker
@@ -155,10 +173,11 @@ const AddStudent = () => {
       <Card className="h-full flex flex-col relative overflow-hidden">
         <CardHeader>
           <motion.div variants={formItemVariants} initial="hidden" animate="visible">
-            <CardTitle>Add Student</CardTitle>
+            <CardTitle>{isEditMode ? 'Edit Student' : 'Add Student'}</CardTitle>
             <CardDescription>
-              Enter the student's details below. Use the date picker for date fields and select
-              options where available.
+              {isEditMode
+                ? "Edit the student's details below. Use the date picker for date fields and select options where available."
+                : "Enter the student's details below. Use the date picker for date fields and select options where available."}
             </CardDescription>
           </motion.div>
         </CardHeader>
@@ -171,12 +190,15 @@ const AddStudent = () => {
               initial="hidden"
               animate="visible"
             >
-              {Object.keys(formData).map((field) => (
-                <motion.div key={field} className="space-y-2" variants={formItemVariants}>
-                  <Label htmlFor={field}>{formatLabel(field)}</Label>
-                  {renderField(field)}
-                </motion.div>
-              ))}
+              {Object.keys(formData).map(
+                (field) =>
+                  field !== 'id' && (
+                    <motion.div key={field} className="space-y-2" variants={formItemVariants}>
+                      <Label htmlFor={field}>{formatLabel(field)}</Label>
+                      {renderField(field)}
+                    </motion.div>
+                  )
+              )}
             </motion.form>
           </ScrollArea>
         </CardContent>
@@ -193,9 +215,13 @@ const AddStudent = () => {
               className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-center space-x-2"
             >
               <motion.div variants={iconVariants}>
-                <UserPlus className="mr-2 h-4 w-4" />
+                {isEditMode ? (
+                  <UserCheck className="mr-2 h-4 w-4" />
+                ) : (
+                  <UserPlus className="mr-2 h-4 w-4" />
+                )}
               </motion.div>
-              <span>Add Student</span>
+              <span>{isEditMode ? 'Update Student' : 'Add Student'}</span>
             </Button>
           </motion.div>
         </div>

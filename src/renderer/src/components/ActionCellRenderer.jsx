@@ -1,5 +1,5 @@
 import React from 'react'
-import { MoreVertical, Trash2, Award } from 'lucide-react'
+import { MoreVertical, Trash2, Award, Edit } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   DropdownMenu,
@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import generateCertificate from './generateCertificate'
+import { useNavigate } from 'react-router-dom'
 
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.8, x: -20 },
@@ -54,8 +55,11 @@ const iconVariants = {
 const MotionMoreVertical = motion(MoreVertical)
 const MotionAward = motion(Award)
 const MotionTrash2 = motion(Trash2)
+const MotionEdit = motion(Edit)
 
 export const ActionCellRenderer = (params) => {
+  const navigate = useNavigate()
+
   const handleDelete = async () => {
     console.log('Delete clicked for row:', params.data)
     try {
@@ -89,6 +93,10 @@ export const ActionCellRenderer = (params) => {
     }
   }
 
+  const handleEdit = () => {
+    navigate('/add-student', { state: { studentData: params.data } })
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -108,6 +116,17 @@ export const ActionCellRenderer = (params) => {
       <AnimatePresence>
         <DropdownMenuContent side="right" align="start" sideOffset={5} className="w-56" asChild>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" exit="exit">
+            <DropdownMenuItem asChild onClick={handleEdit}>
+              <motion.div variants={itemVariants} className="flex items-center cursor-pointer">
+                <MotionEdit
+                  className="mr-2 h-4 w-4 text-gray-500"
+                  variants={iconVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                />
+                <span>Edit Student</span>
+              </motion.div>
+            </DropdownMenuItem>
             <DropdownMenuItem asChild onClick={handleGenerateCertificate}>
               <motion.div variants={itemVariants} className="flex items-center cursor-pointer">
                 <MotionAward
