@@ -1,3 +1,5 @@
+// src/renderer/src/pages/AddStudent.jsx
+
 import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -61,7 +63,11 @@ const AddStudent = () => {
     dateOfLeaving: '',
     currentStandard: '',
     reasonOfLeaving: '',
-    remarks: ''
+    remarks: '',
+    motherTongue: '',
+    ten: '',
+    grn: '',
+    certGenCount: '0'
   })
 
   const handleChange = (e) => {
@@ -102,7 +108,11 @@ const AddStudent = () => {
           dateOfLeaving: '',
           currentStandard: '',
           reasonOfLeaving: '',
-          remarks: ''
+          remarks: '',
+          motherTongue: '',
+          ten: '',
+          grn: '',
+          certGenCount: '0'
         }) // Reset form
       } else {
         toast.error('Failed to add student. Please try again.')
@@ -141,7 +151,7 @@ const AddStudent = () => {
                 <motion.div key={field} className="space-y-2" variants={formItemVariants}>
                   <Label htmlFor={field}>{formatLabel(field)}</Label>
                   <Input
-                    type="text"
+                    type={field === 'certGenCount' ? 'number' : 'text'}
                     id={field}
                     name={field}
                     value={formData[field]}
@@ -150,6 +160,7 @@ const AddStudent = () => {
                     required
                     pattern={field.includes('date') ? '\\d{4}-\\d{2}-\\d{2}' : undefined}
                     title={field.includes('date') ? 'Enter date in YYYY-MM-DD format' : undefined}
+                    min={field === 'certGenCount' ? '0' : undefined}
                   />
                 </motion.div>
               ))}
