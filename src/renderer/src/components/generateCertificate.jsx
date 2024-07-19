@@ -67,25 +67,25 @@ const generateCertificate = async (student) => {
           <span style="font-size: 36px; font-weight: bold; text-decoration: underline;">Leaving Certificate</span>
         </div>
         <pre style="line-height: 1.6; padding: 10px 0; font-family: inherit; font-size: inherit; margin: 0; white-space: pre-wrap; word-wrap: break-word;">
-${createField('Student ID', updatedStudent.studentId, 25)} ${createField('U.I.D. No. (Aadhar Card No.)', updatedStudent.aadharNo, 15)}
+${createField('Student ID', updatedStudent.studentId, 25)} ${createField('U.I.D. No. (Aadhar Card No.)', updatedStudent.aadharNo, 20)}
 <strong>Name of the student in full</strong> ${createField('(Name)', updatedStudent.name, 20)} ${createField("(Father's Name)", updatedStudent.fathersName, 20)}
                                           ${createField('(Surname)', updatedStudent.surname, 30)}
 ${createField("Mother's Name", updatedStudent.mothersName, 40)}
-${createField('Nationality', updatedStudent.nationality || 'Indian', 15)} ${createField('Mother tongue', updatedStudent.motherTongue, 40)}
+${createField('Nationality', updatedStudent.nationality || 'Indian', 20)} ${createField('Mother tongue', updatedStudent.motherTongue, 40)}
 ${createField('Religion', updatedStudent.religion, 15)} ${createField('Caste', updatedStudent.caste, 20)} ${createField('Sub-caste', updatedStudent.subCaste, 25)}
 ${createField('Place of Birth', updatedStudent.placeOfBirth, 10)} ${createField('Taluka', updatedStudent.taluka, 10)} ${createField('Dist', updatedStudent.district, 10)} ${createField('State', updatedStudent.state, 12)} <strong>Country:</strong> India
-${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(updatedStudent.dateOfBirth), 30)}
-${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
-<strong>Last school attended & standard:</strong>${createField('', updatedStudent.lastAttendedSchool, 50)}
-${createField('', updatedStudent.lastSchoolStandard, 80)}
+${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(updatedStudent.dateOfBirth), 34)}
+${createField('Date of Birth (In words)', dateOfBirthInWords, 64)}
+<strong>Last school attended & standard:</strong>${createField('', updatedStudent.lastAttendedSchool, 55)}
+${createField('', updatedStudent.lastSchoolStandard, 85)}
 ${createField('Date of admission in this school', formatDate(updatedStudent.dateOfAdmission), 24)} ${createField('Standard', updatedStudent.admissionStandard, 25)}
-${createField('Progress', updatedStudent.progress, 30)} ${createField('Conduct', updatedStudent.conduct, 35)}
-${createField('Date of leaving school', formatDate(updatedStudent.dateOfLeaving), 55)}
-${createField('Standard in which studying and since when (in words and figure)', updatedStudent.currentStandard, 80)}
-${createField('Reason of leaving school', updatedStudent.reasonOfLeaving, 60)}
-${createField('Remarks', updatedStudent.remarks, 75)}
+${createField('Progress', updatedStudent.progress, 33)} ${createField('Conduct', updatedStudent.conduct, 35)}
+${createField('Date of leaving school', formatDate(updatedStudent.dateOfLeaving), 65)}
+${createField('Standard in which studying and since when (in words and figure)', updatedStudent.currentStandard, 85)}
+${createField('Reason of leaving school', updatedStudent.reasonOfLeaving, 64)}
+${createField('Remarks', updatedStudent.remarks, 78)}
         </pre>
-        <p style="margin-top: -25px;  font-weight: bold;">Certified that the above information is in accordance with the School Register.</p>
+        <p style="margin-top: -30px;  font-weight: bold;">Certified that the above information is in accordance with the School Register.</p>
         <div style="display: flex; justify-content: space-between; margin-top: 40px;">
           <div><strong>Date:</strong> ${new Date().getDate()}</div>
           <div><strong>Month:</strong> ${new Date().toLocaleString('default', { month: 'long' })}</div>
