@@ -110,7 +110,7 @@ export const ActionButtons = ({ isEditMode, isLoading, setIsLoading, formData, n
             <motion.div variants={iconVariants}>
               <FileText className="mr-2 h-4 w-4" />
             </motion.div>
-            <span>{isLoading ? 'Processing...' : 'Update and Generate Certificate'}</span>
+            <span>{isLoading ? 'Processing...' : 'Generate Certificate'}</span>
           </Button>
         </motion.div>
       </div>

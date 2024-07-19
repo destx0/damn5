@@ -118,17 +118,6 @@ export const ActionCellRenderer = (params) => {
           <motion.div variants={containerVariants} initial="hidden" animate="visible" exit="exit">
             <DropdownMenuItem asChild onClick={handleEdit}>
               <motion.div variants={itemVariants} className="flex items-center cursor-pointer">
-                <MotionEdit
-                  className="mr-2 h-4 w-4 text-gray-500"
-                  variants={iconVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                />
-                <span>Edit Student</span>
-              </motion.div>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild onClick={handleGenerateCertificate}>
-              <motion.div variants={itemVariants} className="flex items-center cursor-pointer">
                 <MotionAward
                   className="mr-2 h-4 w-4 text-gray-500"
                   variants={iconVariants}
@@ -138,6 +127,17 @@ export const ActionCellRenderer = (params) => {
                 <span>Generate Certificate</span>
               </motion.div>
             </DropdownMenuItem>
+            {/* <DropdownMenuItem asChild onClick={handleGenerateCertificate}>
+              <motion.div variants={itemVariants} className="flex items-center cursor-pointer">
+                <MotionAward
+                  className="mr-2 h-4 w-4 text-gray-500"
+                  variants={iconVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                />
+                <span>Generate Certificate</span>
+              </motion.div>
+            </DropdownMenuItem> */}
             <DropdownMenuItem asChild onClick={handleDelete}>
               <motion.div
                 variants={itemVariants}
