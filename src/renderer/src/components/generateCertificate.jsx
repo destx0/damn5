@@ -23,7 +23,7 @@ const generateCertificate = async (student) => {
     const createField = (label, value, size) => {
       const field = value || ''
       const padding = '&nbsp;'.repeat(Math.max(0, size - field.length))
-      return `<strong>${label}:</strong> <span style="display: inline-block; position: relative; width: ${size}ch;">${field}${padding}<span style="position: absolute; bottom: -1px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
+      return `<strong>${label}:</strong> <span style="display: inline-block; position: relative; width: ${size}ch;">${field}${padding}<span style="position: absolute; bottom: -5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
     }
 
     const dateOfBirthInWords = dateConverter(new Date(updatedStudent.dateOfBirth), {
@@ -67,7 +67,7 @@ const generateCertificate = async (student) => {
           <span style="font-size: 36px; font-weight: bold; text-decoration: underline;">Leaving Certificate</span>
         </div>
         <pre style="line-height: 1.6; padding: 10px 0; font-family: inherit; font-size: inherit; margin: 0; white-space: pre-wrap; word-wrap: break-word;">
-${createField('Student ID', updatedStudent.studentId, 25)} ${createField('U.I.D. No. (Aadhar Card No.)', updatedStudent.aadharNo, 20)}
+${createField('Student ID', updatedStudent.studentId, 25)} ${createField('U.I.D. No. (Aadhar Card No.)', updatedStudent.aadharNo, 24)}
 <strong>Name of the student in full</strong> ${createField('(Name)', updatedStudent.name, 20)} ${createField("(Father's Name)", updatedStudent.fathersName, 20)}
                                           ${createField('(Surname)', updatedStudent.surname, 30)}
 ${createField("Mother's Name", updatedStudent.mothersName, 40)}
