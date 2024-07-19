@@ -17,67 +17,72 @@ const generateCertificate = async (student) => {
       return date.toLocaleDateString('en-GB')
     }
 
-    const createField = (value, size) => {
+    const createField = (label, value, size) => {
       const field = value || ''
       const padding = '&nbsp;'.repeat(Math.max(0, size - field.length))
-      return `<span style="display: inline-block; position: relative; width: ${size}ch;">${field}${padding}<span style="position: absolute; bottom: -1px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
+      return `<strong>${label}:</strong> <span style="display: inline-block; position: relative; width: ${size}ch;">${field}${padding}<span style="position: absolute; bottom: -1px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
     }
 
     const certificateHTML = `
-      <div id="certificate" style="width: 210mm; height: 297mm; padding: 20mm 12mm; box-sizing: border-box; background-color: white; font-family: 'Times New Roman', Times, serif; border: 2px solid black; font-size: 13pt; position: relative; font-weight: 500;">
+      <div id="certificate" style="width: 210mm; height: 297mm; padding: 20mm 12mm; box-sizing: border-box; background-color: white; font-family: 'Times New Roman', Times, serif; border: 2px solid black; font-size: 13pt; position: relative;">
         <style>
           #certificate pre {
             line-height: 2;
+          }
+          #certificate strong {
+            font-weight: 700;
           }
         </style>
         <div style="position: absolute; top: 10mm; left: 10mm; right: 10mm; bottom: 10mm; border: 2px solid black;"></div>
         <h3 style="text-align: center;">Jaggannath Shikshan Prasarak Mandal's</h3>
         <h2 style="text-align: center; font-size: 23px;">Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h2>
         <h3 style="text-align: center;">Taluka- Yawal, Dist. Jalgaon</h3>
-        <p style="text-align: center; margin-top: -10px; font-weight: normal;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
+        <p style="text-align: center; margin-top: -10px;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-          <span>Sr. No. ${createField(serialNumber.toString(), 10)}</span>
-          <span>G. Register No. ${createField(updatedStudent.grn, 15)}</span>
+          <span><strong>Sr. No.</strong> ${createField('', serialNumber.toString(), 10)}</span>
+          <span><strong>G. Register No.</strong> ${createField('', updatedStudent.grn, 15)}</span>
         </div>
         <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-          <span>TEN: ${createField(updatedStudent.ten, 30)}</span>
+          <span><strong>TEN:</strong> ${createField('', updatedStudent.ten, 30)}</span>
         </div>
         <pre style="font-family: inherit; font-size: inherit; margin: 0; white-space: pre-wrap; word-wrap: break-word;">School Reg. No.- Edu. Depu.Dir/Sec-2/First Appru/90-91/92/Div.Sec.Depu.Dir.Nashik/Datted 12-3-92</pre>
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-          <span>U Dise No.- 27031508414</span>
-          <span>Board- Nashik</span>
-          <span>Index No.- 15.15.005</span>
+          <span><strong>U Dise No.</strong>- 27031508414</span>
+          <span><strong>Board</strong>- Nashik</span>
+          <span><strong>Index No.</strong>- 15.15.005</span>
         </div>
         <h2 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">Leaving Certificate</h2>
         <pre style="line-height: 1.6; padding: 10px 0; font-family: inherit; font-size: inherit; margin: 0; white-space: pre-wrap; word-wrap: break-word;">
-Student ID.: ${createField(updatedStudent.studentId, 25)} U.I.D. No. (Aadhar Card No.): ${createField(updatedStudent.aadharNo, 15)}
-Name of the student in full (Name): ${createField(updatedStudent.name, 12)} (Father's Name): ${createField(updatedStudent.fathersName, 12)}
-(Surname): ${createField(updatedStudent.surname, 20)}
-Mother's Name: ${createField(updatedStudent.mothersName, 30)}
-Nationality: ${createField(updatedStudent.nationality || 'Indian', 15)} Mother tongue: ${createField(updatedStudent.motherTongue, 29)}
-Religion: ${createField(updatedStudent.religion, 10)} Caste: ${createField(updatedStudent.caste, 15)} Sub-caste: ${createField(updatedStudent.subCaste, 15)}
-Place of Birth: ${createField(updatedStudent.placeOfBirth, 20)} Taluka: ${createField(updatedStudent.taluka, 25)} Dist: ${createField(updatedStudent.district, 25)} State: ${createField(updatedStudent.state, 20)} Country: India
-Date of Birth (DD/MM/YY): according to the Christian era ${createField(formatDate(updatedStudent.dateOfBirth), 20)}
-Date of Birth (In words): ${createField(updatedStudent.dateOfBirthInWords, 50)}
-Last school attended & standard: ${createField(updatedStudent.lastAttendedSchool, 45)}
-                                 ${createField(updatedStudent.lastSchoolStandard, 45)}
-Date of admission in this school: ${createField(formatDate(updatedStudent.dateOfAdmission), 10)} Standard: ${createField(updatedStudent.admissionStandard, 20)}
-Progress: ${createField(updatedStudent.progress, 25)} Conduct: ${createField(updatedStudent.conduct, 25)}
-Date of leaving school: ${createField(formatDate(updatedStudent.dateOfLeaving), 10)}
-Standard in which studying and since when (in words and figure): ${createField(updatedStudent.currentStandard, 30)}
-Reason of leaving school: ${createField(updatedStudent.reasonOfLeaving, 30)}
-Remarks: ${createField(updatedStudent.remarks, 50)}
+${createField('Student ID', updatedStudent.studentId, 25)} ${createField('U.I.D. No. (Aadhar Card No.)', updatedStudent.aadharNo, 15)}
+<strong>Name of the student in full</strong>
+${createField('Name', updatedStudent.name, 20)} ${createField("Father's Name", updatedStudent.fathersName, 20)}
+${createField('Surname', updatedStudent.surname, 30)}
+${createField("Mother's Name", updatedStudent.mothersName, 40)}
+${createField('Nationality', updatedStudent.nationality || 'Indian', 15)} ${createField('Mother tongue', updatedStudent.motherTongue, 29)}
+${createField('Religion', updatedStudent.religion, 15)} ${createField('Caste', updatedStudent.caste, 15)} ${createField('Sub-caste', updatedStudent.subCaste, 15)}
+${createField('Place of Birth', updatedStudent.placeOfBirth, 20)} ${createField('Taluka', updatedStudent.taluka, 20)} ${createField('Dist', updatedStudent.district, 20)} ${createField('State', updatedStudent.state, 15)} <strong>Country:</strong> India
+${createField('Date of Birth (DD/MM/YY)', formatDate(updatedStudent.dateOfBirth), 20)}
+${createField('Date of Birth (In words)', updatedStudent.dateOfBirthInWords, 50)}
+<strong>Last school attended & standard:</strong>
+${createField('', updatedStudent.lastAttendedSchool, 60)}
+${createField('', updatedStudent.lastSchoolStandard, 60)}
+${createField('Date of admission in this school', formatDate(updatedStudent.dateOfAdmission), 15)} ${createField('Standard', updatedStudent.admissionStandard, 20)}
+${createField('Progress', updatedStudent.progress, 25)} ${createField('Conduct', updatedStudent.conduct, 25)}
+${createField('Date of leaving school', formatDate(updatedStudent.dateOfLeaving), 15)}
+${createField('Standard in which studying and since when (in words and figure)', updatedStudent.currentStandard, 40)}
+${createField('Reason of leaving school', updatedStudent.reasonOfLeaving, 40)}
+${createField('Remarks', updatedStudent.remarks, 60)}
         </pre>
         <p style="margin-top: 20px;">Certified that the above information is in accordance with the School Register.</p>
         <div style="display: flex; justify-content: space-between; margin-top: 40px;">
-          <div>Date: ${new Date().getDate()}</div>
-          <div>Month: ${new Date().toLocaleString('default', { month: 'long' })}</div>
-          <div>Year: ${new Date().getFullYear()}</div>
+          <div><strong>Date:</strong> ${new Date().getDate()}</div>
+          <div><strong>Month:</strong> ${new Date().toLocaleString('default', { month: 'long' })}</div>
+          <div><strong>Year:</strong> ${new Date().getFullYear()}</div>
         </div>
         <div style="display: flex; justify-content: space-between; margin-top: 40px;">
-          <div>Class Teacher</div>
-          <div>Clerk</div>
-          <div>Head Master<br>(Seal)</div>
+          <div><strong>Class Teacher</strong></div>
+          <div><strong>Clerk</strong></div>
+          <div><strong>Head Master</strong><br>(Seal)</div>
         </div>
         <pre style="font-size: 10pt; margin-top: 20px;">* No change in any entry in this certificate shall be made except by the authority issuing it.
 * Any infringement of the rule is liable to be dealt with by rustication or by other suitable punishment.</pre>
