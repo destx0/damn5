@@ -104,13 +104,20 @@ const generateCertificate = async (student) => {
         <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
           <span><strong>TEN:</strong> ${createField('', updatedStudent.ten, 30)}</span>
         </div>
-        <pre style="font-family: inherit; font-size: inherit; margin: 0; white-space: pre-wrap; word-wrap: break-word;">School Reg. No.- Edu. Depu.Dir/Sec-2/First Appru/90-91/92/Div.Sec.Depu.Dir.Nashik/Datted 12-3-92</pre>
+<div style="margin-bottom: 10px;">
+  <strong>School Reg. No.</strong>- Edu. Depu.Dir/Sec-2/First Appru/
+  <span style="float: right;"><strong>Medium:</strong> Marathi</span>
+  <br>
+  <span style="padding-left: 7.5em;">90-91/92/Div.Sec.Depu.Dir.Nashik/Datted 12-3-92</span>
+</div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
           <span><strong>U Dise No.</strong>- 27031508414</span>
           <span><strong>Board</strong>- Nashik</span>
           <span><strong>Index No.</strong>- 15.15.005</span>
         </div>
-        <h2 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">Leaving Certificate</h2>
+        <div style="text-align: center; margin-bottom: 20px;">
+  <span style="font-size: 36px; font-weight: bold; text-decoration: underline;">Leaving Certificate</span>
+</div>
         <pre style="line-height: 1.6; padding: 10px 0; font-family: inherit; font-size: inherit; margin: 0; white-space: pre-wrap; word-wrap: break-word;">
 ${createField('Student ID', updatedStudent.studentId, 25)} ${createField('U.I.D. No. (Aadhar Card No.)', updatedStudent.aadharNo, 15)}
 <strong>Name of the student in full</strong>
