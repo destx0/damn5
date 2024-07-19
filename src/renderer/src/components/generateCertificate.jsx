@@ -93,10 +93,10 @@ const generateCertificate = async (student) => {
           }
         </style>
         <div style="position: absolute; top: 10mm; left: 10mm; right: 10mm; bottom: 10mm; border: 2px solid black;"></div>
-        <h3 style="text-align: center;">Jaggannath Shikshan Prasarak Mandal's</h3>
-        <h2 style="text-align: center; font-size: 23px;">Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h2>
-        <h3 style="text-align: center;">Taluka- Yawal, Dist. Jalgaon</h3>
-        <p style="text-align: center; margin-top: -10px;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
+<h3 style="text-align: center; font-weight: bold; margin-top: -40px; margin-bottom: -6x;">Jaggannath Shikshan Prasarak Mandal's</h3>
+<h2 style="text-align: center; font-size: 23px; font-weight: bold;  margin-bottom: -6px;">Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h2>
+<h3 style="text-align: center; font-weight: bold; margin-top: 0;">Taluka- Yawal, Dist. Jalgaon</h3>
+        <p style="text-align: center; margin-top: -6px;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
           <span><strong>Sr. No.</strong> ${createField('', serialNumber.toString(), 10)}</span>
           <span><strong>G. Register No.</strong> ${createField('', updatedStudent.grn, 15)}</span>
