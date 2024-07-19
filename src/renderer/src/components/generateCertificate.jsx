@@ -1,6 +1,63 @@
+// src/renderer/src/utils/generateCertificate.js
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { toast } from 'sonner'
+import { format, parse } from 'date-fns'
+
+const numberToWords = (num) => {
+  const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+  const tens = [
+    '',
+    '',
+    'twenty',
+    'thirty',
+    'forty',
+    'fifty',
+    'sixty',
+    'seventy',
+    'eighty',
+    'ninety'
+  ]
+  const teens = [
+    'ten',
+    'eleven',
+    'twelve',
+    'thirteen',
+    'fourteen',
+    'fifteen',
+    'sixteen',
+    'seventeen',
+    'eighteen',
+    'nineteen'
+  ]
+
+  if (num < 10) return ones[num]
+  if (num < 20) return teens[num - 10]
+  if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? '-' + ones[num % 10] : '')
+  if (num < 1000)
+    return (
+      ones[Math.floor(num / 100)] +
+      ' hundred' +
+      (num % 100 !== 0 ? ' and ' + numberToWords(num % 100) : '')
+    )
+  return (
+    numberToWords(Math.floor(num / 1000)) +
+    ' thousand' +
+    (num % 1000 !== 0 ? ' ' + numberToWords(num % 1000) : '')
+  )
+}
+
+const dateToWords = (dateString) => {
+  const date = parse(dateString, 'yyyy-MM-dd', new Date())
+  const day = format(date, 'd')
+  const month = format(date, 'MMMM')
+  const year = format(date, 'yyyy')
+
+  const dayInWords = numberToWords(parseInt(day))
+  const yearInWords = numberToWords(parseInt(year))
+
+  return `${dayInWords} ${month} ${yearInWords}`
+}
 
 const generateCertificate = async (student) => {
   try {
@@ -22,6 +79,8 @@ const generateCertificate = async (student) => {
       const padding = '&nbsp;'.repeat(Math.max(0, size - field.length))
       return `<strong>${label}:</strong> <span style="display: inline-block; position: relative; width: ${size}ch;">${field}${padding}<span style="position: absolute; bottom: -1px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
     }
+
+    const dateOfBirthInWords = dateToWords(updatedStudent.dateOfBirth)
 
     const certificateHTML = `
       <div id="certificate" style="width: 210mm; height: 297mm; padding: 20mm 12mm; box-sizing: border-box; background-color: white; font-family: 'Times New Roman', Times, serif; border: 2px solid black; font-size: 13pt; position: relative;">
@@ -62,7 +121,7 @@ ${createField('Nationality', updatedStudent.nationality || 'Indian', 15)} ${crea
 ${createField('Religion', updatedStudent.religion, 15)} ${createField('Caste', updatedStudent.caste, 15)} ${createField('Sub-caste', updatedStudent.subCaste, 15)}
 ${createField('Place of Birth', updatedStudent.placeOfBirth, 20)} ${createField('Taluka', updatedStudent.taluka, 20)} ${createField('Dist', updatedStudent.district, 20)} ${createField('State', updatedStudent.state, 15)} <strong>Country:</strong> India
 ${createField('Date of Birth (DD/MM/YY)', formatDate(updatedStudent.dateOfBirth), 20)}
-${createField('Date of Birth (In words)', updatedStudent.dateOfBirthInWords, 50)}
+${createField('Date of Birth (In words)', dateOfBirthInWords, 50)}
 <strong>Last school attended & standard:</strong>
 ${createField('', updatedStudent.lastAttendedSchool, 60)}
 ${createField('', updatedStudent.lastSchoolStandard, 60)}
