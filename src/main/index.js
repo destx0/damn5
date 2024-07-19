@@ -1,8 +1,8 @@
 // src/main/index.js
-
-import { app, ipcMain, dialog } from 'electron'
+import { app, ipcMain, dialog, BrowserWindow } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import fs from 'fs'
+import path from 'path'
 import { createWindow } from './window'
 import * as db from './database'
 
@@ -46,16 +46,6 @@ function registerIpcHandlers() {
     }
   })
 
-  ipcMain.handle('generate-certificate', async (event, studentId) => {
-    try {
-      const result = await db.generateCertificate(studentId)
-      return { success: true, ...result }
-    } catch (error) {
-      console.error('Error generating certificate:', error)
-      return { success: false, error: error.message }
-    }
-  })
-
   ipcMain.handle('update-student', async (event, student) => {
     try {
       await db.updateStudent(student)
@@ -78,17 +68,28 @@ function registerIpcHandlers() {
     }
   })
 
-  ipcMain.handle('save-file-dialog', async () => {
+  ipcMain.handle('generate-certificate', async (event, studentId) => {
+    try {
+      const result = await db.generateCertificate(studentId)
+      return { success: true, ...result }
+    } catch (error) {
+      console.error('Error generating certificate:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('save-file-dialog', async (event, content) => {
     try {
       const result = await dialog.showSaveDialog({
         filters: [{ name: 'CSV', extensions: ['csv'] }]
       })
 
+      if (result.canceled) {
+        return { success: false, reason: 'Export cancelled' }
+      }
+
       if (result.filePath) {
-        const students = await db.getStudents()
-        const headers = Object.keys(students[0]).join(',')
-        const csvContent = students.map((s) => Object.values(s).join(',')).join('\n')
-        fs.writeFileSync(result.filePath, `${headers}\n${csvContent}`)
+        fs.writeFileSync(result.filePath, content)
         return { success: true, filePath: result.filePath }
       }
       return { success: false, reason: 'No file path selected' }
@@ -98,7 +99,29 @@ function registerIpcHandlers() {
   })
 }
 
-app.whenReady().then(async () => {
+function setupAppEventListeners() {
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
+
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+
+  app.on('second-instance', () => {
+    const mainWindow = BrowserWindow.getAllWindows()[0]
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
+  })
+}
+
+async function initializeApp() {
+  await app.whenReady()
+
   electronApp.setAppUserModelId('com.electron')
 
   app.on('browser-window-created', (_, window) => {
@@ -107,14 +130,19 @@ app.whenReady().then(async () => {
 
   await db.initializeDatabase()
   registerIpcHandlers()
+  setupAppEventListeners()
 
   createWindow()
+}
 
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
+// This method will be called when Electron has finished initialization
+// and is ready to create browser windows.
+initializeApp().catch((error) => {
+  console.error('Failed to initialize app:', error)
+  app.quit()
 })
 
+// Quit when all windows are closed, except on macOS.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()

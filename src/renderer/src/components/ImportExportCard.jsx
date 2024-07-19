@@ -1,3 +1,4 @@
+// src/renderer/src/components/ImportExportCard.jsx
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -38,11 +39,17 @@ const iconVariants = {
 const ImportExportCard = () => {
   const handleImport = async () => {
     try {
-      const importResult = await window.api.importFileAndSave()
+      const result = await window.api.openFileDialog()
+      if (result.canceled) {
+        toast.info('Import cancelled')
+        return
+      }
+      const filePath = result.filePaths[0]
+      const importResult = await window.api.importFileAndSave(filePath)
       if (importResult.success) {
         toast.success('File imported and data saved successfully!')
       } else {
-        toast.error(`Failed to import and save file: ${importResult.reason || importResult.error}`)
+        toast.error(`Failed to import and save file: ${importResult.error}`)
       }
     } catch (error) {
       console.error('Import error:', error)
@@ -79,7 +86,11 @@ const ImportExportCard = () => {
           'dateOfLeaving',
           'currentStandard',
           'reasonOfLeaving',
-          'remarks'
+          'remarks',
+          'motherTongue',
+          'ten',
+          'grn',
+          'certGenCount'
         ]
 
         const csvContent = result.data
@@ -87,14 +98,11 @@ const ImportExportCard = () => {
             headers
               .map((header) => {
                 let value = student[header]
-                if (
-                  typeof value === 'string' &&
-                  ['dateOfBirth', 'dateOfAdmission', 'dateOfLeaving'].includes(header)
-                ) {
-                  const date = new Date(value)
-                  value = date.toISOString().split('T')[0]
+                // Keep date values as strings
+                if (typeof value === 'string') {
+                  return `"${value.replace(/"/g, '""')}"`
                 }
-                return typeof value === 'string' ? `"${value}"` : value
+                return value
               })
               .join(',')
           )
@@ -193,11 +201,9 @@ const ImportExportCard = () => {
                 >
                   <Download className="mr-2 h-4 w-4" />
                 </motion.div>
-                Export to XLSX
+                Export to CSV
               </Button>
-              <p className="text-xs text-muted-foreground">
-                Export all student data to an XLSX file
-              </p>
+              <p className="text-xs text-muted-foreground">Export all student data to a CSV file</p>
             </motion.div>
           </CardContent>
         </Card>
