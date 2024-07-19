@@ -47,8 +47,8 @@ const generateCertificate = async (student) => {
         <h3 style="text-align: center; font-weight: bold; margin-top: 0;">Taluka- Yawal, Dist. Jalgaon</h3>
         <p style="text-align: center; margin-top: -6px;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
         <div style="display: flex; justify-content: space-between; margin-bottom: 0px;">
-          <span><strong>Sr. No.</strong> ${createField('', serialNumber.toString(), 10)}</span>
-          <span><strong>G. Register No.</strong> ${createField('', updatedStudent.grn, 15)}</span>
+          <span><strong>Sr. No.</strong> ${createField('', serialNumber.toString(), 8)}</span>
+          <span><strong>G. Register No.</strong> ${createField('', updatedStudent.grn, 6)}</span>
         </div>
 <div style="display: flex; justify-content: space-between; margin-bottom: 0px;">
   <span><strong>School Reg. No.</strong>- Edu. Depu.Dir/Sec-2/First Appru/</span>
@@ -68,23 +68,24 @@ const generateCertificate = async (student) => {
         </div>
         <pre style="line-height: 1.6; padding: 10px 0; font-family: inherit; font-size: inherit; margin: 0; white-space: pre-wrap; word-wrap: break-word;">
 ${createField('Student ID', updatedStudent.studentId, 25)} ${createField('U.I.D. No. (Aadhar Card No.)', updatedStudent.aadharNo, 15)}
-<strong>Name of the student in full</strong> ${createField('Name', updatedStudent.name, 20)} ${createField("Father's Name", updatedStudent.fathersName, 20)}
-${createField('Surname', updatedStudent.surname, 30)} ${createField("Mother's Name", updatedStudent.mothersName, 40)}
-${createField('Nationality', updatedStudent.nationality || 'Indian', 15)} ${createField('Mother tongue', updatedStudent.motherTongue, 29)}
-${createField('Religion', updatedStudent.religion, 15)} ${createField('Caste', updatedStudent.caste, 15)} ${createField('Sub-caste', updatedStudent.subCaste, 15)}
-${createField('Place of Birth', updatedStudent.placeOfBirth, 20)} ${createField('Taluka', updatedStudent.taluka, 20)} ${createField('Dist', updatedStudent.district, 20)} ${createField('State', updatedStudent.state, 15)} <strong>Country:</strong> India
-${createField('Date of Birth (DD/MM/YY)', formatDate(updatedStudent.dateOfBirth), 20)}
-${createField('Date of Birth (In words)', dateOfBirthInWords, 50)}
-<strong>Last school attended & standard:</strong>${createField('', updatedStudent.lastAttendedSchool, 60)}
-${createField('', updatedStudent.lastSchoolStandard, 60)}
-${createField('Date of admission in this school', formatDate(updatedStudent.dateOfAdmission), 15)} ${createField('Standard', updatedStudent.admissionStandard, 20)}
-${createField('Progress', updatedStudent.progress, 25)} ${createField('Conduct', updatedStudent.conduct, 25)}
-${createField('Date of leaving school', formatDate(updatedStudent.dateOfLeaving), 15)}
-${createField('Standard in which studying and since when (in words and figure)', updatedStudent.currentStandard, 40)}
-${createField('Reason of leaving school', updatedStudent.reasonOfLeaving, 40)}
-${createField('Remarks', updatedStudent.remarks, 60)}
+<strong>Name of the student in full</strong> ${createField('(Name)', updatedStudent.name, 20)} ${createField("(Father's Name)", updatedStudent.fathersName, 20)}
+                                          ${createField('(Surname)', updatedStudent.surname, 30)}
+${createField("Mother's Name", updatedStudent.mothersName, 40)}
+${createField('Nationality', updatedStudent.nationality || 'Indian', 15)} ${createField('Mother tongue', updatedStudent.motherTongue, 40)}
+${createField('Religion', updatedStudent.religion, 15)} ${createField('Caste', updatedStudent.caste, 20)} ${createField('Sub-caste', updatedStudent.subCaste, 25)}
+${createField('Place of Birth', updatedStudent.placeOfBirth, 10)} ${createField('Taluka', updatedStudent.taluka, 10)} ${createField('Dist', updatedStudent.district, 10)} ${createField('State', updatedStudent.state, 12)} <strong>Country:</strong> India
+${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(updatedStudent.dateOfBirth), 30)}
+${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
+<strong>Last school attended & standard:</strong>${createField('', updatedStudent.lastAttendedSchool, 50)}
+${createField('', updatedStudent.lastSchoolStandard, 80)}
+${createField('Date of admission in this school', formatDate(updatedStudent.dateOfAdmission), 24)} ${createField('Standard', updatedStudent.admissionStandard, 25)}
+${createField('Progress', updatedStudent.progress, 30)} ${createField('Conduct', updatedStudent.conduct, 35)}
+${createField('Date of leaving school', formatDate(updatedStudent.dateOfLeaving), 55)}
+${createField('Standard in which studying and since when (in words and figure)', updatedStudent.currentStandard, 80)}
+${createField('Reason of leaving school', updatedStudent.reasonOfLeaving, 60)}
+${createField('Remarks', updatedStudent.remarks, 75)}
         </pre>
-        <p style="margin-top: -15px;">Certified that the above information is in accordance with the School Register.</p>
+        <p style="margin-top: -25px;  font-weight: bold;">Certified that the above information is in accordance with the School Register.</p>
         <div style="display: flex; justify-content: space-between; margin-top: 40px;">
           <div><strong>Date:</strong> ${new Date().getDate()}</div>
           <div><strong>Month:</strong> ${new Date().toLocaleString('default', { month: 'long' })}</div>
@@ -96,7 +97,8 @@ ${createField('Remarks', updatedStudent.remarks, 60)}
           <div><strong>Head Master</strong><br>(Seal)</div>
         </div>
         <pre style="font-size: 10pt; margin-top: 20px;">* No change in any entry in this certificate shall be made except by the authority issuing it.
-* Any infringement of the rule is liable to be dealt with by rustication or by other suitable punishment.</pre>
+* Any infringement of the rule is liable to be dealt with by rustication or by other suitable
+punishment.</pre>
       </div>
     `
 
