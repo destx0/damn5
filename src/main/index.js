@@ -68,16 +68,6 @@ function registerIpcHandlers() {
     }
   })
 
-  ipcMain.handle('generate-certificate', async (event, studentId) => {
-    try {
-      const result = await db.generateCertificate(studentId)
-      return { success: true, ...result }
-    } catch (error) {
-      console.error('Error generating certificate:', error)
-      return { success: false, error: error.message }
-    }
-  })
-
   ipcMain.handle('save-file-dialog', async (event, content) => {
     try {
       const result = await dialog.showSaveDialog({
@@ -90,6 +80,39 @@ function registerIpcHandlers() {
 
       if (result.filePath) {
         fs.writeFileSync(result.filePath, content)
+        return { success: true, filePath: result.filePath }
+      }
+      return { success: false, reason: 'No file path selected' }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('generate-certificate', async (event, studentId) => {
+    try {
+      const result = await db.generateCertificate(studentId)
+      const tempPath = path.join(os.tmpdir(), `certificate_${studentId}.pdf`)
+      fs.writeFileSync(tempPath, result.pdfBuffer)
+      return { success: true, ...result, tempPath }
+    } catch (error) {
+      console.error('Error generating certificate:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('save-certificate', async (event, tempPath, studentName) => {
+    try {
+      const result = await dialog.showSaveDialog({
+        defaultPath: `${studentName}_certificate.pdf`,
+        filters: [{ name: 'PDF', extensions: ['pdf'] }]
+      })
+
+      if (result.canceled) {
+        return { success: false, reason: 'Save cancelled' }
+      }
+
+      if (result.filePath) {
+        fs.copyFileSync(tempPath, result.filePath)
         return { success: true, filePath: result.filePath }
       }
       return { success: false, reason: 'No file path selected' }
