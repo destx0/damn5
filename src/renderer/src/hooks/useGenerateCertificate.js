@@ -1,18 +1,19 @@
-// src/renderer/src/components/generateCertificate.js
-import React, { useCallback, useState } from 'react'
+// src/renderer/src/hooks/useGenerateCertificate.js
+import { useState, useCallback } from 'react'
 import { toast } from 'sonner'
-import PDFPreview from '@/components/PDFPreview'
 
 const createDataUrl = (base64Data) => {
   return `data:application/pdf;base64,${base64Data}`
 }
 
-const GenerateCertificate = ({ student }) => {
+export const useGenerateCertificate = () => {
   const [pdfDataUrl, setPdfDataUrl] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const generateCertificate = useCallback(async () => {
+  const generateCertificate = useCallback(async (studentId) => {
+    setIsLoading(true)
     try {
-      const result = await window.api.generateCertificate(student.studentId)
+      const result = await window.api.generateCertificate(studentId)
       if (!result.success) {
         throw new Error(result.error)
       }
@@ -22,22 +23,24 @@ const GenerateCertificate = ({ student }) => {
         'Certificate Generated',
         `The comprehensive A4 certificate has been generated. Certificate count: ${result.data.certGenCount}`
       )
+      return result.data
     } catch (error) {
       console.error('Error generating certificate:', error)
       toast.error('Error', 'There was an error generating the certificate. Please try again.')
+      throw error
+    } finally {
+      setIsLoading(false)
     }
-  }, [student])
+  }, [])
 
-  const closePdfPreview = () => {
+  const closePdfPreview = useCallback(() => {
     setPdfDataUrl(null)
+  }, [])
+
+  return {
+    pdfDataUrl,
+    isLoading,
+    generateCertificate,
+    closePdfPreview
   }
-
-  return (
-    <>
-      <button onClick={generateCertificate}>Generate Certificate</button>
-      {pdfDataUrl && <PDFPreview pdfData={pdfDataUrl} onClose={closePdfPreview} />}
-    </>
-  )
 }
-
-export default GenerateCertificate

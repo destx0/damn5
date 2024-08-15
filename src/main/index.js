@@ -5,8 +5,10 @@ import fs from 'fs'
 import path from 'path'
 import { createWindow } from './window'
 import * as db from './database'
+import { setupCertificateHandler } from './certificateHandler'
 
 function registerIpcHandlers() {
+  setupCertificateHandler()
   ipcMain.handle('open-file-dialog', async () => {
     const result = await dialog.showOpenDialog({
       properties: ['openFile'],
@@ -88,17 +90,17 @@ function registerIpcHandlers() {
     }
   })
 
-  ipcMain.handle('generate-certificate', async (event, studentId) => {
-    try {
-      const result = await db.generateCertificate(studentId)
-      const tempPath = path.join(os.tmpdir(), `certificate_${studentId}.pdf`)
-      fs.writeFileSync(tempPath, result.pdfBuffer)
-      return { success: true, ...result, tempPath }
-    } catch (error) {
-      console.error('Error generating certificate:', error)
-      return { success: false, error: error.message }
-    }
-  })
+  // ipcMain.handle('generate-certificate', async (event, studentId) => {
+  //   try {
+  //     const result = await db.generateCertificate(studentId)
+  //     const tempPath = path.join(os.tmpdir(), `certificate_${studentId}.pdf`)
+  //     fs.writeFileSync(tempPath, result.pdfBuffer)
+  //     return { success: true, ...result, tempPath }
+  //   } catch (error) {
+  //     console.error('Error generating certificate:', error)
+  //     return { success: false, error: error.message }
+  //   }
+  // })
 
   ipcMain.handle('save-certificate', async (event, tempPath, studentName) => {
     try {
