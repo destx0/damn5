@@ -5,10 +5,10 @@ import fs from 'fs'
 import path from 'path'
 import { createWindow } from './window'
 import * as db from './database'
-import { setupCertificateHandler } from './certificateHandler'
+// import { setupCertificateHandler } from './certificateHandler'
 
 function registerIpcHandlers() {
-  setupCertificateHandler()
+  // setupCertificateHandler()
   ipcMain.handle('open-file-dialog', async () => {
     const result = await dialog.showOpenDialog({
       properties: ['openFile'],
