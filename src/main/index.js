@@ -5,10 +5,11 @@ import fs from 'fs'
 import path from 'path'
 import { createWindow } from './window'
 import * as db from './database'
-// import { setupCertificateHandler } from './certificateHandler'
+import { setupCertificateHandler } from './certificateHandler'
 
 function registerIpcHandlers() {
-  // setupCertificateHandler()
+  setupCertificateHandler()
+
   ipcMain.handle('open-file-dialog', async () => {
     const result = await dialog.showOpenDialog({
       properties: ['openFile'],
@@ -90,18 +91,6 @@ function registerIpcHandlers() {
     }
   })
 
-  // ipcMain.handle('generate-certificate', async (event, studentId) => {
-  //   try {
-  //     const result = await db.generateCertificate(studentId)
-  //     const tempPath = path.join(os.tmpdir(), `certificate_${studentId}.pdf`)
-  //     fs.writeFileSync(tempPath, result.pdfBuffer)
-  //     return { success: true, ...result, tempPath }
-  //   } catch (error) {
-  //     console.error('Error generating certificate:', error)
-  //     return { success: false, error: error.message }
-  //   }
-  // })
-
   ipcMain.handle('save-certificate', async (event, tempPath, studentName) => {
     try {
       const result = await dialog.showSaveDialog({
@@ -122,6 +111,9 @@ function registerIpcHandlers() {
       return { success: false, error: error.message }
     }
   })
+
+  // The handlers for generate-leave-certificate and generate-bonafide-certificate
+  // are now handled by setupCertificateHandler().
 }
 
 function setupAppEventListeners() {
@@ -160,14 +152,11 @@ async function initializeApp() {
   createWindow()
 }
 
-// This method will be called when Electron has finished initialization
-// and is ready to create browser windows.
 initializeApp().catch((error) => {
   console.error('Failed to initialize app:', error)
   app.quit()
 })
 
-// Quit when all windows are closed, except on macOS.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()

@@ -1,17 +1,20 @@
 import React from 'react'
-import { MoreVertical, Trash2, Award, Edit } from 'lucide-react'
+import { MoreVertical, Trash2, Award, Edit, FileText } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import generateCertificate from './generateCertificate'
 import { useNavigate } from 'react-router-dom'
 
+// Motion variants
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.8, x: -20 },
   visible: {
@@ -52,10 +55,12 @@ const iconVariants = {
   exit: { opacity: 0, x: -20, transition: { ease: 'easeIn', duration: 0.2 } }
 }
 
+// Motion components
 const MotionMoreVertical = motion(MoreVertical)
 const MotionAward = motion(Award)
 const MotionTrash2 = motion(Trash2)
 const MotionEdit = motion(Edit)
+const MotionFileText = motion(FileText)
 
 export const ActionCellRenderer = (params) => {
   const navigate = useNavigate()
@@ -69,7 +74,6 @@ export const ActionCellRenderer = (params) => {
           'Student Deleted',
           'The student has been successfully deleted from the database.'
         )
-        // Refresh the grid data
         params.api.applyTransaction({ remove: [params.data] })
       } else {
         throw new Error(result.error)
@@ -80,16 +84,40 @@ export const ActionCellRenderer = (params) => {
     }
   }
 
-  const handleGenerateCertificate = async () => {
+  const handleGenerateLeaveCertificate = async () => {
     try {
-      await generateCertificate(params.data)
-      toast.success(
-        'Certificate Generated',
-        'The comprehensive A4 certificate has been generated and downloaded.'
-      )
+      const result = await window.api.generateLeaveCertificate(params.data.studentId)
+      if (result.success) {
+        toast.success(
+          'Leave Certificate Generated',
+          'The leave certificate has been generated and saved.'
+        )
+      } else {
+        throw new Error(result.error)
+      }
     } catch (error) {
-      console.error('Error generating certificate:', error)
-      toast.error('Error', 'There was an error generating the certificate. Please try again.')
+      console.error('Error generating leave certificate:', error)
+      toast.error('Error', 'There was an error generating the leave certificate. Please try again.')
+    }
+  }
+
+  const handleGenerateBonafideCertificate = async () => {
+    try {
+      const result = await window.api.generateBonafideCertificate(params.data.studentId)
+      if (result.success) {
+        toast.success(
+          'Bonafide Certificate Generated',
+          'The bonafide certificate has been generated and saved.'
+        )
+      } else {
+        throw new Error(result.error)
+      }
+    } catch (error) {
+      console.error('Error generating bonafide certificate:', error)
+      toast.error(
+        'Error',
+        'There was an error generating the bonafide certificate. Please try again.'
+      )
     }
   }
 
@@ -127,17 +155,43 @@ export const ActionCellRenderer = (params) => {
                 <span>Edit</span>
               </motion.div>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild onClick={handleGenerateCertificate}>
-              <motion.div variants={itemVariants} className="flex items-center cursor-pointer">
-                <MotionAward
-                  className="mr-2 h-4 w-4 text-gray-500"
-                  variants={iconVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                />
-                <span>Generate Certificate</span>
-              </motion.div>
-            </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <motion.div variants={itemVariants} className="flex items-center cursor-pointer">
+                  <MotionAward
+                    className="mr-2 h-4 w-4 text-gray-500"
+                    variants={iconVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                  />
+                  <span>Generate Certificate</span>
+                </motion.div>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={handleGenerateLeaveCertificate}>
+                  <motion.div variants={itemVariants} className="flex items-center cursor-pointer">
+                    <MotionFileText
+                      className="mr-2 h-4 w-4 text-gray-500"
+                      variants={iconVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                    />
+                    <span>Leave Certificate</span>
+                  </motion.div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleGenerateBonafideCertificate}>
+                  <motion.div variants={itemVariants} className="flex items-center cursor-pointer">
+                    <MotionFileText
+                      className="mr-2 h-4 w-4 text-gray-500"
+                      variants={iconVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                    />
+                    <span>Bonafide Certificate</span>
+                  </motion.div>
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             <DropdownMenuItem asChild onClick={handleDelete}>
               <motion.div
                 variants={itemVariants}

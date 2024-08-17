@@ -224,7 +224,15 @@ export async function generateCertificate(studentId) {
     throw error
   }
 }
-
+export async function getStudentById(studentId) {
+  try {
+    const student = await db.get('SELECT * FROM students WHERE studentId = ?', studentId)
+    return student
+  } catch (error) {
+    console.error('Error fetching student by ID:', error)
+    throw error
+  }
+}
 export async function importStudents(filePath) {
   let data
   if (filePath.endsWith('.csv')) {

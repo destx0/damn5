@@ -11,10 +11,13 @@ const api = {
   addStudent: (student) => ipcRenderer.invoke('add-student', student),
   updateStudent: (student) => ipcRenderer.invoke('update-student', student),
   deleteStudent: (studentId) => ipcRenderer.invoke('delete-student', studentId),
-  generateCertificate: (studentId) => ipcRenderer.invoke('generate-certificate', studentId),
-  saveCertificate: (tempPath, studentName) => ipcRenderer.invoke('save-certificate', tempPath, studentName)
+  generateLeaveCertificate: (studentId, isDraft) =>
+    ipcRenderer.invoke('generate-leave-certificate', studentId, isDraft),
+  generateBonafideCertificate: (studentId, isDraft) =>
+    ipcRenderer.invoke('generate-bonafide-certificate', studentId, isDraft),
+  saveCertificate: (tempPath, studentName) =>
+    ipcRenderer.invoke('save-certificate', tempPath, studentName)
 }
-
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
